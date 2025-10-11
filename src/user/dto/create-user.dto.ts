@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, Matches, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -50,4 +51,15 @@ export class CreateUserDto {
     message: 'El teléfono debe tener un formato válido',
   })
   phone?: string;
+
+  @ApiProperty({
+    description: 'Rol del usuario en el sistema',
+    enum: UserRole,
+    example: UserRole.CLIENTE,
+    default: UserRole.CLIENTE,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(UserRole, { message: 'El rol debe ser un valor válido' })
+  role?: UserRole;
 }

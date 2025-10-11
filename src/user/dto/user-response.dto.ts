@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../entities/user.entity';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 export class UserResponseDto {
   @ApiProperty({
@@ -52,6 +53,13 @@ export class UserResponseDto {
   emailVerified: boolean;
 
   @ApiProperty({
+    description: 'Rol del usuario en el sistema',
+    enum: UserRole,
+    example: UserRole.CLIENTE,
+  })
+  role: UserRole;
+
+  @ApiProperty({
     description: 'Fecha de creación del usuario',
     example: '2024-01-01T00:00:00.000Z',
   })
@@ -72,6 +80,7 @@ export class UserResponseDto {
     this.phone = user.phone;
     this.isActive = user.isActive;
     this.emailVerified = user.emailVerified;
+    this.role = user.role;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }

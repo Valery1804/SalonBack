@@ -7,6 +7,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { ServiceModule } from './service/service.module';
+import { ScheduleModule } from './schedule/schedule.module';
+import { AppointmentModule } from './appointment/appointment.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     }),
     AuthModule,
     UserModule,
+    ServiceModule,
+    ScheduleModule,
+    AppointmentModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

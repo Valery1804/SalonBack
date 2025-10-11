@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 @Entity('users')
 export class User {
@@ -30,6 +31,13 @@ export class User {
 
   @Column({ nullable: true })
   phone: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CLIENTE,
+  })
+  role: UserRole;
 
   @Column({ default: true })
   isActive: boolean;
