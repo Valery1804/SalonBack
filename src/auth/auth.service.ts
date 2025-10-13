@@ -3,13 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserResponseDto } from '../user/dto/user-response.dto';
 import { JwtPayload } from '../common/interfaces/jwt-payload.interface';
 import * as crypto from 'crypto';
+import { UserRole } from '../common/enums/user-role.enum';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -56,20 +57,16 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    if (registerDto.password !== registerDto.confirmPassword) {
-      throw new BadRequestException('Las contraseñas no coinciden');
-    }
-
+  async register(registerDto: CreateUserDto): Promise<AuthResponseDto> {
     const user = await this.userService.create({
       email: registerDto.email,
       password: registerDto.password,
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
       phone: registerDto.phone,
+      role: registerDto.role ?? UserRole.CLIENTE,
     });
 
-    // Auto-login después del registro
     return this.login({
       email: registerDto.email,
       password: registerDto.password,
@@ -147,8 +144,7 @@ export class AuthService {
     }
 
     // Generar nuevo token de verificación
-    const { v4: uuidv4 } = await import('uuid');
-    const verificationToken = uuidv4();
+    const verificationToken = crypto.randomUUID();
     await this.userService.update(user.id, {
       emailVerificationToken: verificationToken,
     });

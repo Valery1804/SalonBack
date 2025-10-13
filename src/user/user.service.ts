@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -24,10 +25,9 @@ export class UserService {
     }
 
     // Crear el usuario
-    const { v4: uuidv4 } = await import('uuid');
     const user = this.userRepository.create({
       ...createUserDto,
-      emailVerificationToken: uuidv4(),
+      emailVerificationToken: randomUUID(),
     });
 
     const savedUser = await this.userRepository.save(user);

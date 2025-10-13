@@ -6,7 +6,6 @@ import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { CreateScheduleBlockDto } from './dto/create-schedule-block.dto';
 import { Schedule } from './entities/schedule.entity';
 import { ScheduleBlock } from './entities/schedule-block.entity';
-import { UserRole } from '../common/enums/user-role.enum';
 import { DayOfWeek } from '../common/enums/day-of-week.enum';
 
 @Injectable()
@@ -20,10 +19,7 @@ export class ScheduleService {
 
   // Schedules regulares
   async create(createScheduleDto: CreateScheduleDto): Promise<Schedule> {
-    // Verificar que el horario de inicio sea menor que el de fin
-    if (createScheduleDto.startTime >= createScheduleDto.endTime) {
-      throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin');
-    }
+    this.ensureValidTimeRange(createScheduleDto.startTime, createScheduleDto.endTime);
 
     const schedule = this.scheduleRepository.create(createScheduleDto);
     return this.scheduleRepository.save(schedule);
@@ -60,11 +56,9 @@ export class ScheduleService {
   async update(id: string, updateScheduleDto: UpdateScheduleDto): Promise<Schedule> {
     const schedule = await this.findOne(id);
 
-    if (updateScheduleDto.startTime && updateScheduleDto.endTime) {
-      if (updateScheduleDto.startTime >= updateScheduleDto.endTime) {
-        throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin');
-      }
-    }
+    const nextStartTime = updateScheduleDto.startTime ?? schedule.startTime;
+    const nextEndTime = updateScheduleDto.endTime ?? schedule.endTime;
+    this.ensureValidTimeRange(nextStartTime, nextEndTime);
 
     await this.scheduleRepository.update(id, updateScheduleDto);
     return this.findOne(id);
@@ -77,9 +71,7 @@ export class ScheduleService {
 
   // Bloqueos de horarios
   async createBlock(createScheduleBlockDto: CreateScheduleBlockDto): Promise<ScheduleBlock> {
-    if (createScheduleBlockDto.startTime >= createScheduleBlockDto.endTime) {
-      throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin');
-    }
+    this.ensureValidTimeRange(createScheduleBlockDto.startTime, createScheduleBlockDto.endTime);
 
     const block = this.scheduleBlockRepository.create(createScheduleBlockDto);
     return this.scheduleBlockRepository.save(block);
@@ -92,10 +84,17 @@ export class ScheduleService {
     });
   }
 
-  async findBlocksByDateRange(startDate: Date, endDate: Date): Promise<ScheduleBlock[]> {
+  async findBlocksByDateRange(startDate: Date | string, endDate: Date | string): Promise<ScheduleBlock[]> {
+    const normalizedStart = this.normalizeDateInput(startDate);
+    const normalizedEnd = this.normalizeDateInput(endDate);
+
+    if (normalizedStart > normalizedEnd) {
+      throw new BadRequestException('La fecha de inicio debe ser menor o igual que la fecha de fin');
+    }
+
     return this.scheduleBlockRepository.find({
       where: {
-        date: Between(startDate, endDate),
+        date: Between(normalizedStart, normalizedEnd),
         isActive: true,
       },
       relations: ['staff'],
@@ -124,8 +123,9 @@ export class ScheduleService {
   }
 
   // Obtener disponibilidad de un staff en una fecha específica
-  async getStaffAvailability(staffId: string, date: Date) {
-    const dayOfWeek = this.getDayOfWeekFromDate(date) as DayOfWeek;
+  async getStaffAvailability(staffId: string, date: Date | string) {
+    const normalizedDate = this.normalizeDateInput(date);
+    const dayOfWeek = this.getDayOfWeekFromDate(normalizedDate) as DayOfWeek;
 
     // Obtener horarios regulares
     const schedules = await this.scheduleRepository.find({
@@ -135,8 +135,8 @@ export class ScheduleService {
     // Obtener bloqueos para esa fecha
     const blocks = await this.scheduleBlockRepository.find({
       where: [
-        { staffId, date, isActive: true },
-        { staffId: null, date, isActive: true }, // Bloqueos globales
+        { staffId, date: normalizedDate, isActive: true },
+        { staffId: null, date: normalizedDate, isActive: true }, // Bloqueos globales
       ],
     });
 
@@ -157,5 +157,41 @@ export class ScheduleService {
       DayOfWeek.SABADO,
     ];
     return days[date.getDay()];
+  }
+
+  private normalizeDateInput(date: Date | string): Date {
+    const parsed = typeof date === 'string' ? new Date(date) : date;
+
+    if (!(parsed instanceof Date) || Number.isNaN(parsed.getTime())) {
+      throw new BadRequestException('La fecha proporcionada no es válida');
+    }
+
+    return parsed;
+  }
+
+  private ensureValidTimeRange(startTime: string, endTime: string): void {
+    const startMinutes = this.parseTimeToMinutes(startTime);
+    const endMinutes = this.parseTimeToMinutes(endTime);
+
+    if (startMinutes >= endMinutes) {
+      throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin');
+    }
+  }
+
+  private parseTimeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23 ||
+      minutes < 0 ||
+      minutes > 59
+    ) {
+      throw new BadRequestException('El formato de la hora no es válido');
+    }
+
+    return hours * 60 + minutes;
   }
 }

@@ -25,7 +25,7 @@ export class AppointmentController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener todas las citas (Solo personal y admin)' })
   @ApiResponse({ status: 200, description: 'Lista de citas obtenida exitosamente' })
   findAll() {
@@ -48,7 +48,7 @@ export class AppointmentController {
   }
 
   @Get('by-staff/:staffId')
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener citas de un miembro del personal' })
   @ApiResponse({ status: 200, description: 'Citas del staff obtenidas exitosamente' })
   findByStaff(@Param('staffId') staffId: string) {
@@ -100,7 +100,7 @@ export class AppointmentController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Actualizar estado de una cita (Solo personal y admin)' })
   @ApiResponse({ status: 200, description: 'Estado actualizado exitosamente' })
   updateStatus(@Param('id') id: string, @Body() updateStatusDto: UpdateStatusDto) {

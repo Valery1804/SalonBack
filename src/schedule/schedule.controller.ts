@@ -25,7 +25,7 @@ export class ScheduleController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener todos los horarios' })
   @ApiResponse({ status: 200, description: 'Lista de horarios obtenida exitosamente' })
   findAll() {
@@ -33,7 +33,7 @@ export class ScheduleController {
   }
 
   @Get('staff/:staffId')
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener horarios de un miembro del personal' })
   @ApiResponse({ status: 200, description: 'Horarios del staff obtenidos exitosamente' })
   findByStaffId(@Param('staffId') staffId: string) {
@@ -82,7 +82,7 @@ export class ScheduleController {
   }
 
   @Get('blocks/date-range')
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener bloqueos por rango de fechas' })
   @ApiQuery({ name: 'startDate', type: Date, description: 'Fecha de inicio' })
   @ApiQuery({ name: 'endDate', type: Date, description: 'Fecha de fin' })
@@ -92,7 +92,7 @@ export class ScheduleController {
   }
 
   @Get('blocks/staff/:staffId')
-  @Roles(UserRole.ADMIN, UserRole.ESTILISTA, UserRole.MANICURISTA, UserRole.BARBERO, UserRole.MAQUILLADOR)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener bloqueos de un miembro del personal' })
   @ApiResponse({ status: 200, description: 'Bloqueos del staff obtenidos exitosamente' })
   findBlocksByStaffId(@Param('staffId') staffId: string) {
