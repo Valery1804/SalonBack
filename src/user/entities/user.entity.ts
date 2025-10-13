@@ -10,6 +10,7 @@ import {
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { ProviderType } from '../../common/enums/provider-type.enum';
 
 @Entity('users')
 export class User {
@@ -38,6 +39,13 @@ export class User {
     default: UserRole.CLIENTE,
   })
   role: UserRole;
+
+  @Column({
+    type: 'enum',
+    enum: ProviderType,
+    nullable: true,
+  })
+  providerType: ProviderType | null;
 
   @Column({ default: true })
   isActive: boolean;

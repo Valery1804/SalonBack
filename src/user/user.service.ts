@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { randomUUID } from 'crypto';
+import { UserRole } from '../common/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,10 @@ export class UserService {
     // Crear el usuario
     const user = this.userRepository.create({
       ...createUserDto,
+      providerType:
+        createUserDto.role === UserRole.PRESTADOR_SERVICIO
+          ? createUserDto.providerType
+          : null,
       emailVerificationToken: randomUUID(),
     });
 
@@ -36,7 +41,19 @@ export class UserService {
 
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.userRepository.find({
-      select: ['id', 'email', 'firstName', 'lastName', 'phone', 'isActive', 'emailVerified', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'providerType',
+        'isActive',
+        'emailVerified',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
     return users.map(user => new UserResponseDto(user));
@@ -45,7 +62,19 @@ export class UserService {
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
-      select: ['id', 'email', 'firstName', 'lastName', 'phone', 'isActive', 'emailVerified', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'providerType',
+        'isActive',
+        'emailVerified',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
     if (!user) {
@@ -77,10 +106,14 @@ export class UserService {
       }
     }
 
+    if (updateUserDto.role && updateUserDto.role !== UserRole.PRESTADOR_SERVICIO) {
+      updateUserDto.providerType = null;
+    }
+
     await this.userRepository.update(id, updateUserDto);
     const updatedUser = await this.userRepository.findOne({
       where: { id },
-      select: ['id', 'email', 'firstName', 'lastName', 'phone', 'isActive', 'emailVerified', 'createdAt', 'updatedAt'],
+      select: ['id', 'email', 'firstName', 'lastName', 'phone', 'role', 'isActive', 'emailVerified', 'createdAt', 'updatedAt'],
     });
 
     return new UserResponseDto(updatedUser);

@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configurar pipes globales
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -15,13 +16,11 @@ async function bootstrap() {
     }),
   );
 
-  // Configurar CORS
   app.enableCors();
 
-  // Configurar Swagger
   const config = new DocumentBuilder()
     .setTitle('Salon Backend API')
-    .setDescription('API completa para el sistema de salón con autenticación JWT')
+    .setDescription('API completa para el sistema de salon con autenticacion JWT')
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -43,10 +42,15 @@ async function bootstrap() {
     },
   });
 
+  const docsPath = join(process.cwd(), 'swagger-spec.json');
+  writeFileSync(docsPath, JSON.stringify(document, null, 2), { encoding: 'utf8' });
+  console.log(`Swagger JSON generado en: ${docsPath}`);
+
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  
-  console.log(`🚀 Aplicación ejecutándose en: http://localhost:${port}`);
-  console.log(`📚 Documentación Swagger en: http://localhost:${port}/api/docs`);
+
+  console.log(`Aplicacion ejecutandose en: http://localhost:${port}`);
+  console.log(`Documentacion Swagger en: http://localhost:${port}/api/docs`);
 }
+
 bootstrap();

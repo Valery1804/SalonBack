@@ -11,6 +11,7 @@ import { ServiceModule } from './service/service.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { ReviewModule } from './review/review.module';
+import { ServiceSlotModule } from './service-slot/service-slot.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ReviewModule } from './review/review.module';
     ScheduleModule,
     AppointmentModule,
     ReviewModule,
+    ServiceSlotModule,
   ],
   controllers: [AppController],
   providers: [

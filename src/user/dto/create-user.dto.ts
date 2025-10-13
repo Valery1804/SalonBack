@@ -1,6 +1,7 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, Matches, IsEnum } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, Matches, IsEnum, ValidateIf } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { ProviderType } from '../../common/enums/provider-type.enum';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -62,4 +63,15 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole, { message: 'El rol debe ser un valor válido' })
   role?: UserRole;
+
+  @ApiProperty({
+    description: 'Tipo de prestador (obligatorio para rol prestador_servicio)',
+    enum: ProviderType,
+    example: ProviderType.BARBERO,
+    required: false,
+  })
+  @ValidateIf((o) => o.role === UserRole.PRESTADOR_SERVICIO)
+  @IsNotEmpty({ message: 'El tipo de prestador es requerido' })
+  @IsEnum(ProviderType, { message: 'El tipo de prestador no es válido' })
+  providerType?: ProviderType;
 }

@@ -58,6 +58,13 @@ export class AuthService {
   }
 
   async register(registerDto: CreateUserDto): Promise<AuthResponseDto> {
+    if (registerDto.role === UserRole.PRESTADOR_SERVICIO && !registerDto.providerType) {
+      throw new BadRequestException('El tipo de proveedor es obligatorio para usuarios con rol PROVEEDOR');
+    }
+    if(registerDto.role === UserRole.CLIENTE && registerDto.providerType) {
+      throw new BadRequestException('El tipo de proveedor no debe ser proporcionado para usuarios con rol CLIENTE');
+    }
+
     const user = await this.userService.create({
       email: registerDto.email,
       password: registerDto.password,
@@ -65,6 +72,7 @@ export class AuthService {
       lastName: registerDto.lastName,
       phone: registerDto.phone,
       role: registerDto.role ?? UserRole.CLIENTE,
+      providerType: registerDto.providerType,
     });
 
     return this.login({

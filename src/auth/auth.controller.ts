@@ -17,12 +17,12 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -55,7 +55,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 409, description: 'El email ya está registrado' })
   @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
-  async register(@Body() registerDto: CreateUserDto): Promise<AuthResponseDto> {
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
   }
 
