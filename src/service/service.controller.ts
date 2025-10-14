@@ -37,9 +37,14 @@ export class ServiceController {
 
   @Post()
   @Roles(UserRole.PRESTADOR_SERVICIO)
-  @ApiOperation({ summary: 'Crear un nuevo servicio (Solo Prestador de Servicio)' })
+  @ApiOperation({
+    summary: 'Crear un nuevo servicio (Solo Prestador de Servicio)',
+  })
   @ApiResponse({ status: 201, description: 'Servicio creado exitosamente' })
-  @ApiResponse({ status: 409, description: 'Ya existe un servicio con ese nombre' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe un servicio con ese nombre',
+  })
   create(
     @Body() createServiceDto: CreateServiceDto,
     @CurrentUser() currentUser: CurrentUserPayload,
@@ -50,7 +55,10 @@ export class ServiceController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'Obtener todos los servicios' })
-  @ApiResponse({ status: 200, description: 'Lista de servicios obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de servicios obtenida exitosamente',
+  })
   findAll() {
     return this.serviceService.findAll();
   }
@@ -58,7 +66,10 @@ export class ServiceController {
   @Get('active')
   @Public()
   @ApiOperation({ summary: 'Obtener servicios activos' })
-  @ApiResponse({ status: 200, description: 'Lista de servicios activos obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de servicios activos obtenida exitosamente',
+  })
   findActive() {
     return this.serviceService.findActive();
   }
@@ -75,7 +86,10 @@ export class ServiceController {
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Actualizar un servicio' })
-  @ApiResponse({ status: 200, description: 'Servicio actualizado exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicio actualizado exitosamente',
+  })
   @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
   update(
     @Param('id') id: string,
@@ -90,7 +104,10 @@ export class ServiceController {
   @ApiOperation({ summary: 'Eliminar un servicio' })
   @ApiResponse({ status: 200, description: 'Servicio eliminado exitosamente' })
   @ApiResponse({ status: 404, description: 'Servicio no encontrado' })
-  remove(@Param('id') id: string, @CurrentUser() currentUser: CurrentUserPayload) {
+  remove(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: CurrentUserPayload,
+  ) {
     return this.serviceService.remove(id, currentUser);
   }
 }

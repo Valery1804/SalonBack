@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsEnum, IsUUID, Matches, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  IsUUID,
+  Matches,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { DayOfWeek } from '../../common/enums/day-of-week.enum';
 
@@ -16,7 +24,9 @@ export class CreateScheduleDto {
     enum: DayOfWeek,
     example: DayOfWeek.LUNES,
   })
-  @IsEnum(DayOfWeek, { message: 'El día de la semana debe ser un valor válido' })
+  @IsEnum(DayOfWeek, {
+    message: 'El día de la semana debe ser un valor válido',
+  })
   @IsNotEmpty({ message: 'El día de la semana es requerido' })
   dayOfWeek: DayOfWeek;
 

@@ -8,11 +8,14 @@ export class UpdateServiceSlotStatusDto {
     enum: ServiceSlotStatus,
     example: ServiceSlotStatus.RESERVED,
   })
-  @IsEnum(ServiceSlotStatus, { message: 'El estado proporcionado no es válido' })
+  @IsEnum(ServiceSlotStatus, {
+    message: 'El estado proporcionado no es válido',
+  })
   status: ServiceSlotStatus;
 
   @ApiProperty({
-    description: 'ID del cliente que reserva o libera el slot (opcional según el estado)',
+    description:
+      'ID del cliente que reserva o libera el slot (opcional según el estado)',
     example: '323e4567-e89b-12d3-a456-426614174abc',
     required: false,
   })

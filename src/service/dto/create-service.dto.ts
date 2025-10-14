@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber, Min, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateServiceDto {
@@ -20,7 +27,7 @@ export class CreateServiceDto {
 
   @ApiProperty({
     description: 'Precio del servicio',
-    example: 25.00,
+    example: 25.0,
   })
   @IsNumber({}, { message: 'El precio debe ser un número' })
   @Min(0, { message: 'El precio no puede ser negativo' })

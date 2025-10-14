@@ -1,5 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
@@ -27,7 +43,10 @@ export class ScheduleController {
   @Get()
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener todos los horarios' })
-  @ApiResponse({ status: 200, description: 'Lista de horarios obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de horarios obtenida exitosamente',
+  })
   findAll() {
     return this.scheduleService.findAll();
   }
@@ -35,7 +54,10 @@ export class ScheduleController {
   @Get('staff/:staffId')
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener horarios de un miembro del personal' })
-  @ApiResponse({ status: 200, description: 'Horarios del staff obtenidos exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Horarios del staff obtenidos exitosamente',
+  })
   findByStaffId(@Param('staffId') staffId: string) {
     return this.scheduleService.findByStaffId(staffId);
   }
@@ -52,7 +74,10 @@ export class ScheduleController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Actualizar horario (Solo Admin)' })
   @ApiResponse({ status: 200, description: 'Horario actualizado exitosamente' })
-  update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateScheduleDto: UpdateScheduleDto,
+  ) {
     return this.scheduleService.update(id, updateScheduleDto);
   }
 
@@ -76,7 +101,10 @@ export class ScheduleController {
   @Get('blocks/all')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtener todos los bloqueos (Solo Admin)' })
-  @ApiResponse({ status: 200, description: 'Lista de bloqueos obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de bloqueos obtenida exitosamente',
+  })
   findAllBlocks() {
     return this.scheduleService.findAllBlocks();
   }
@@ -87,14 +115,20 @@ export class ScheduleController {
   @ApiQuery({ name: 'startDate', type: Date, description: 'Fecha de inicio' })
   @ApiQuery({ name: 'endDate', type: Date, description: 'Fecha de fin' })
   @ApiResponse({ status: 200, description: 'Bloqueos obtenidos exitosamente' })
-  findBlocksByDateRange(@Query('startDate') startDate: Date, @Query('endDate') endDate: Date) {
+  findBlocksByDateRange(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+  ) {
     return this.scheduleService.findBlocksByDateRange(startDate, endDate);
   }
 
   @Get('blocks/staff/:staffId')
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener bloqueos de un miembro del personal' })
-  @ApiResponse({ status: 200, description: 'Bloqueos del staff obtenidos exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Bloqueos del staff obtenidos exitosamente',
+  })
   findBlocksByStaffId(@Param('staffId') staffId: string) {
     return this.scheduleService.findBlocksByStaffId(staffId);
   }
@@ -110,8 +144,14 @@ export class ScheduleController {
   @Get('availability/:staffId')
   @ApiOperation({ summary: 'Obtener disponibilidad de un staff en una fecha' })
   @ApiQuery({ name: 'date', type: Date, description: 'Fecha a consultar' })
-  @ApiResponse({ status: 200, description: 'Disponibilidad obtenida exitosamente' })
-  getStaffAvailability(@Param('staffId') staffId: string, @Query('date') date: Date) {
+  @ApiResponse({
+    status: 200,
+    description: 'Disponibilidad obtenida exitosamente',
+  })
+  getStaffAvailability(
+    @Param('staffId') staffId: string,
+    @Query('date') date: Date,
+  ) {
     return this.scheduleService.getStaffAvailability(staffId, date);
   }
 }

@@ -9,7 +9,9 @@ export class RegisterDto extends CreateUserDto {
   })
   @IsString({ message: 'La confirmacion de contraseña debe ser texto' })
   @IsNotEmpty({ message: 'La confirmacion de contraseña es requerida' })
-  @MinLength(8, { message: 'La confirmacion de contraseña debe tener al menos 8 caracteres' })
+  @MinLength(8, {
+    message: 'La confirmacion de contraseña debe tener al menos 8 caracteres',
+  })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
     message: 'La confirmacion debe cumplir con los requisitos de complejidad',
   })

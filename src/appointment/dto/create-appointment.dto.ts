@@ -1,9 +1,17 @@
-import { IsNotEmpty, IsString, IsUUID, Matches, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  Matches,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAppointmentDto {
   @ApiProperty({
-    description: 'ID del cliente (se obtiene automáticamente del usuario logueado)',
+    description:
+      'ID del cliente (se obtiene automáticamente del usuario logueado)',
     example: '123e4567-e89b-12d3-a456-426614174000',
     required: false,
   })
@@ -31,7 +39,10 @@ export class CreateAppointmentDto {
     description: 'Fecha de la cita',
     example: '2024-12-25',
   })
-  @IsDateString({}, { message: 'La fecha debe tener un formato válido (YYYY-MM-DD)' })
+  @IsDateString(
+    {},
+    { message: 'La fecha debe tener un formato válido (YYYY-MM-DD)' },
+  )
   @IsNotEmpty({ message: 'La fecha es requerida' })
   date: Date;
 

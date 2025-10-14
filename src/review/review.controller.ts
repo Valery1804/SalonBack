@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -25,7 +40,10 @@ export class ReviewController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'Obtener todas las reseñas' })
-  @ApiResponse({ status: 200, description: 'Lista de reseñas obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de reseñas obtenida exitosamente',
+  })
   findAll() {
     return this.reviewService.findAll();
   }
@@ -33,7 +51,10 @@ export class ReviewController {
   @Get('by-service/:serviceId')
   @Public()
   @ApiOperation({ summary: 'Obtener reseñas de un servicio' })
-  @ApiResponse({ status: 200, description: 'Reseñas del servicio obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reseñas del servicio obtenidas exitosamente',
+  })
   findByService(@Param('serviceId') serviceId: string) {
     return this.reviewService.findByService(serviceId);
   }
@@ -41,14 +62,20 @@ export class ReviewController {
   @Get('by-client/:clientId')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtener reseñas de un cliente (Solo Admin)' })
-  @ApiResponse({ status: 200, description: 'Reseñas del cliente obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reseñas del cliente obtenidas exitosamente',
+  })
   findByClient(@Param('clientId') clientId: string) {
     return this.reviewService.findByClient(clientId);
   }
 
   @Get('my-reviews')
   @ApiOperation({ summary: 'Obtener mis reseñas' })
-  @ApiResponse({ status: 200, description: 'Mis reseñas obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Mis reseñas obtenidas exitosamente',
+  })
   findMyReviews(@Request() req) {
     return this.reviewService.findByClient(req.user.sub);
   }
@@ -56,7 +83,10 @@ export class ReviewController {
   @Get('service-stats/:serviceId')
   @Public()
   @ApiOperation({ summary: 'Obtener estadísticas de reseñas de un servicio' })
-  @ApiResponse({ status: 200, description: 'Estadísticas obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas obtenidas exitosamente',
+  })
   getServiceStats(@Param('serviceId') serviceId: string) {
     return this.reviewService.getServiceStats(serviceId);
   }

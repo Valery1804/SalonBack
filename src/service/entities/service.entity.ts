@@ -38,6 +38,12 @@ export class Service {
   @JoinColumn({ name: 'providerId' })
   provider: User;
 
+  @Column('float', { default: 0 })
+  averageRating: number;
+
+  @Column('int', { default: 0 })
+  reviewsCount: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

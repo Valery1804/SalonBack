@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+﻿import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
@@ -21,7 +26,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findByEmail(email);
-    
+
     if (!user || !user.isActive) {
       return null;
     }
@@ -36,9 +41,9 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
-    
+
     if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Credenciales invÃ¡lidas');
     }
 
     const payload: JwtPayload = {
@@ -58,14 +63,21 @@ export class AuthService {
   }
 
   async register(registerDto: CreateUserDto): Promise<AuthResponseDto> {
-    if (registerDto.role === UserRole.PRESTADOR_SERVICIO && !registerDto.providerType) {
-      throw new BadRequestException('El tipo de proveedor es obligatorio para usuarios con rol PROVEEDOR');
+    if (
+      registerDto.role === UserRole.PRESTADOR_SERVICIO &&
+      !registerDto.providerType
+    ) {
+      throw new BadRequestException(
+        'El tipo de proveedor es obligatorio para usuarios con rol PROVEEDOR',
+      );
     }
-    if(registerDto.role === UserRole.CLIENTE && registerDto.providerType) {
-      throw new BadRequestException('El tipo de proveedor no debe ser proporcionado para usuarios con rol CLIENTE');
+    if (registerDto.role === UserRole.CLIENTE && registerDto.providerType) {
+      throw new BadRequestException(
+        'El tipo de proveedor no debe ser proporcionado para usuarios con rol CLIENTE',
+      );
     }
 
-    const user = await this.userService.create({
+    await this.userService.create({
       email: registerDto.email,
       password: registerDto.password,
       firstName: registerDto.firstName,
@@ -81,56 +93,70 @@ export class AuthService {
     });
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
     const user = await this.userService.findByEmail(forgotPasswordDto.email);
-    
+
     if (!user) {
       // Por seguridad, no revelamos si el email existe o no
       return {
-        message: 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.',
+        message:
+          'Si el email existe en nuestro sistema, recibirÃ¡s un enlace para restablecer tu contraseÃ±a.',
       };
     }
 
-    // Generar token de recuperación
+    // Generar token de recuperaciÃ³n
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
 
-    await this.userService.setPasswordResetToken(user.email, resetToken, resetExpires);
+    await this.userService.setPasswordResetToken(
+      user.email,
+      resetToken,
+      resetExpires,
+    );
 
-    // Aquí deberías enviar el email con el enlace de recuperación
-    // Por ahora, solo logueamos el token (en producción, enviar por email)
-    console.log(`Token de recuperación para ${user.email}: ${resetToken}`);
-    console.log(`Enlace: http://localhost:3000/auth/reset-password?token=${resetToken}`);
+    // AquÃ­ deberÃ­as enviar el email con el enlace de recuperaciÃ³n
+    // Por ahora, solo logueamos el token (en producciÃ³n, enviar por email)
+    console.log(`Token de recuperaciÃ³n para ${user.email}: ${resetToken}`);
+    console.log(
+      `Enlace: http://localhost:3000/auth/reset-password?token=${resetToken}`,
+    );
 
     return {
-      message: 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.',
+      message:
+        'Si el email existe en nuestro sistema, recibirÃ¡s un enlace para restablecer tu contraseÃ±a.',
     };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
-      throw new BadRequestException('Las contraseñas no coinciden');
+      throw new BadRequestException('Las contraseÃ±as no coinciden');
     }
 
-    const user = await this.userService.findByPasswordResetToken(resetPasswordDto.token);
-    
+    const user = await this.userService.findByPasswordResetToken(
+      resetPasswordDto.token,
+    );
+
     if (!user) {
-      throw new BadRequestException('Token inválido o expirado');
+      throw new BadRequestException('Token invÃ¡lido o expirado');
     }
 
     await this.userService.updatePassword(user.id, resetPasswordDto.password);
     await this.userService.clearPasswordResetToken(user.id);
 
     return {
-      message: 'Contraseña restablecida exitosamente',
+      message: 'ContraseÃ±a restablecida exitosamente',
     };
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     const user = await this.userService.findByEmailVerificationToken(token);
-    
+
     if (!user) {
-      throw new BadRequestException('Token de verificación inválido');
+      throw new BadRequestException('Token de verificaciÃ³n invÃ¡lido');
     }
 
     await this.userService.verifyEmail(user.id);
@@ -142,27 +168,31 @@ export class AuthService {
 
   async resendVerificationEmail(email: string): Promise<{ message: string }> {
     const user = await this.userService.findByEmail(email);
-    
+
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
 
     if (user.emailVerified) {
-      throw new BadRequestException('El email ya está verificado');
+      throw new BadRequestException('El email ya estÃ¡ verificado');
     }
 
-    // Generar nuevo token de verificación
+    // Generar nuevo token de verificaciÃ³n
     const verificationToken = crypto.randomUUID();
     await this.userService.update(user.id, {
       emailVerificationToken: verificationToken,
     });
 
-    // Aquí deberías enviar el email con el enlace de verificación
-    console.log(`Token de verificación para ${user.email}: ${verificationToken}`);
-    console.log(`Enlace: http://localhost:3000/auth/verify-email?token=${verificationToken}`);
+    // AquÃ­ deberÃ­as enviar el email con el enlace de verificaciÃ³n
+    console.log(
+      `Token de verificaciÃ³n para ${user.email}: ${verificationToken}`,
+    );
+    console.log(
+      `Enlace: http://localhost:3000/auth/verify-email?token=${verificationToken}`,
+    );
 
     return {
-      message: 'Email de verificación enviado',
+      message: 'Email de verificaciÃ³n enviado',
     };
   }
 }

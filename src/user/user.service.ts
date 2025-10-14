@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -56,7 +61,7 @@ export class UserService {
       ],
     });
 
-    return users.map(user => new UserResponseDto(user));
+    return users.map((user) => new UserResponseDto(user));
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
@@ -88,7 +93,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) {
@@ -106,14 +114,28 @@ export class UserService {
       }
     }
 
-    if (updateUserDto.role && updateUserDto.role !== UserRole.PRESTADOR_SERVICIO) {
+    if (
+      updateUserDto.role &&
+      updateUserDto.role !== UserRole.PRESTADOR_SERVICIO
+    ) {
       updateUserDto.providerType = null;
     }
 
     await this.userRepository.update(id, updateUserDto);
     const updatedUser = await this.userRepository.findOne({
       where: { id },
-      select: ['id', 'email', 'firstName', 'lastName', 'phone', 'role', 'isActive', 'emailVerified', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'isActive',
+        'emailVerified',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
     return new UserResponseDto(updatedUser);
@@ -140,7 +162,11 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  async setPasswordResetToken(email: string, token: string, expires: Date): Promise<void> {
+  async setPasswordResetToken(
+    email: string,
+    token: string,
+    expires: Date,
+  ): Promise<void> {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {

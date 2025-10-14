@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
@@ -19,7 +23,10 @@ export class ScheduleService {
 
   // Schedules regulares
   async create(createScheduleDto: CreateScheduleDto): Promise<Schedule> {
-    this.ensureValidTimeRange(createScheduleDto.startTime, createScheduleDto.endTime);
+    this.ensureValidTimeRange(
+      createScheduleDto.startTime,
+      createScheduleDto.endTime,
+    );
 
     const schedule = this.scheduleRepository.create(createScheduleDto);
     return this.scheduleRepository.save(schedule);
@@ -53,7 +60,10 @@ export class ScheduleService {
     return schedule;
   }
 
-  async update(id: string, updateScheduleDto: UpdateScheduleDto): Promise<Schedule> {
+  async update(
+    id: string,
+    updateScheduleDto: UpdateScheduleDto,
+  ): Promise<Schedule> {
     const schedule = await this.findOne(id);
 
     const nextStartTime = updateScheduleDto.startTime ?? schedule.startTime;
@@ -70,8 +80,13 @@ export class ScheduleService {
   }
 
   // Bloqueos de horarios
-  async createBlock(createScheduleBlockDto: CreateScheduleBlockDto): Promise<ScheduleBlock> {
-    this.ensureValidTimeRange(createScheduleBlockDto.startTime, createScheduleBlockDto.endTime);
+  async createBlock(
+    createScheduleBlockDto: CreateScheduleBlockDto,
+  ): Promise<ScheduleBlock> {
+    this.ensureValidTimeRange(
+      createScheduleBlockDto.startTime,
+      createScheduleBlockDto.endTime,
+    );
 
     const block = this.scheduleBlockRepository.create(createScheduleBlockDto);
     return this.scheduleBlockRepository.save(block);
@@ -84,12 +99,17 @@ export class ScheduleService {
     });
   }
 
-  async findBlocksByDateRange(startDate: Date | string, endDate: Date | string): Promise<ScheduleBlock[]> {
+  async findBlocksByDateRange(
+    startDate: Date | string,
+    endDate: Date | string,
+  ): Promise<ScheduleBlock[]> {
     const normalizedStart = this.normalizeDateInput(startDate);
     const normalizedEnd = this.normalizeDateInput(endDate);
 
     if (normalizedStart > normalizedEnd) {
-      throw new BadRequestException('La fecha de inicio debe ser menor o igual que la fecha de fin');
+      throw new BadRequestException(
+        'La fecha de inicio debe ser menor o igual que la fecha de fin',
+      );
     }
 
     return this.scheduleBlockRepository.find({
@@ -174,7 +194,9 @@ export class ScheduleService {
     const endMinutes = this.parseTimeToMinutes(endTime);
 
     if (startMinutes >= endMinutes) {
-      throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin');
+      throw new BadRequestException(
+        'La hora de inicio debe ser menor que la hora de fin',
+      );
     }
   }
 

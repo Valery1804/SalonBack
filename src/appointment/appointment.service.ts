@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+﻿import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, Not, In } from 'typeorm';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -7,35 +11,51 @@ import { Appointment } from './entities/appointment.entity';
 import { AppointmentStatus } from '../common/enums/appointment-status.enum';
 import { ServiceService } from '../service/service.service';
 import { ScheduleService } from '../schedule/schedule.service';
+import { ServiceSlot } from '../service-slot/entities/service-slot.entity';
+import { ServiceSlotStatus } from '../common/enums/service-slot-status.enum';
 
 @Injectable()
 export class AppointmentService {
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(ServiceSlot)
+    private readonly serviceSlotRepository: Repository<ServiceSlot>,
     private readonly serviceService: ServiceService,
     private readonly scheduleService: ScheduleService,
   ) {}
 
-  async create(createAppointmentDto: CreateAppointmentDto, userId?: string): Promise<Appointment> {
-    // Si no se proporciona clientId, usar el userId del usuario autenticado
+  async create(
+    createAppointmentDto: CreateAppointmentDto,
+    userId?: string,
+  ): Promise<Appointment> {
     const clientId = createAppointmentDto.clientId || userId;
     if (!clientId) {
       throw new BadRequestException('El ID del cliente es requerido');
     }
 
-    // Obtener el servicio para calcular la duración
-    const service = await this.serviceService.findOne(createAppointmentDto.serviceId);
+    const service = await this.serviceService.findOne(
+      createAppointmentDto.serviceId,
+    );
+    const endTime = this.calculateEndTime(
+      createAppointmentDto.startTime,
+      service.durationMinutes,
+    );
 
-    // Calcular hora de fin basado en la duración del servicio
-    const endTime = this.calculateEndTime(createAppointmentDto.startTime, service.durationMinutes);
-
-    // Validar disponibilidad
     await this.validateAvailability(
+      createAppointmentDto.serviceId,
       createAppointmentDto.staffId,
       createAppointmentDto.date,
       createAppointmentDto.startTime,
       endTime,
+      clientId,
+    );
+
+    await this.reserveSlotForAppointment(
+      createAppointmentDto.serviceId,
+      createAppointmentDto.date,
+      createAppointmentDto.startTime,
+      clientId,
     );
 
     const appointment = this.appointmentRepository.create({
@@ -45,7 +65,17 @@ export class AppointmentService {
       status: AppointmentStatus.PENDIENTE,
     });
 
-    return this.appointmentRepository.save(appointment);
+    try {
+      return await this.appointmentRepository.save(appointment);
+    } catch (error) {
+      await this.releaseSlotForAppointment(
+        createAppointmentDto.serviceId,
+        createAppointmentDto.date,
+        createAppointmentDto.startTime,
+        clientId,
+      );
+      throw error;
+    }
   }
 
   async findAll(): Promise<Appointment[]> {
@@ -71,7 +101,10 @@ export class AppointmentService {
     });
   }
 
-  async findByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]> {
+  async findByDateRange(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<Appointment[]> {
     return this.appointmentRepository.find({
       where: {
         date: Between(startDate, endDate),
@@ -94,35 +127,98 @@ export class AppointmentService {
     return appointment;
   }
 
-  async update(id: string, updateAppointmentDto: UpdateAppointmentDto, userId?: string): Promise<Appointment> {
+  async update(
+    id: string,
+    updateAppointmentDto: UpdateAppointmentDto,
+  ): Promise<Appointment> {
     const appointment = await this.findOne(id);
 
-    // Si se está actualizando fecha, hora o personal, validar disponibilidad
-    if (updateAppointmentDto.date || updateAppointmentDto.startTime || updateAppointmentDto.staffId) {
+    const originalServiceId = appointment.serviceId;
+    const originalDate = appointment.date;
+    const originalStartTime = appointment.startTime;
+
+    const targetServiceId =
+      updateAppointmentDto.serviceId || appointment.serviceId;
+    const targetDate = updateAppointmentDto.date || appointment.date;
+    const targetStartTime =
+      updateAppointmentDto.startTime || appointment.startTime;
+
+    if (
+      updateAppointmentDto.date ||
+      updateAppointmentDto.startTime ||
+      updateAppointmentDto.staffId ||
+      updateAppointmentDto.serviceId
+    ) {
       const staffId = updateAppointmentDto.staffId || appointment.staffId;
-      const date = updateAppointmentDto.date || appointment.date;
-      const startTime = updateAppointmentDto.startTime || appointment.startTime;
+      const date = targetDate;
+      const startTime = targetStartTime;
 
       let endTime = appointment.endTime;
-
-      // Si cambia la hora de inicio, recalcular hora de fin
-      if (updateAppointmentDto.startTime) {
-        const service = await this.serviceService.findOne(appointment.serviceId);
+      if (updateAppointmentDto.startTime || updateAppointmentDto.serviceId) {
+        const service = await this.serviceService.findOne(targetServiceId);
         endTime = this.calculateEndTime(startTime, service.durationMinutes);
       }
 
-      await this.validateAvailability(staffId, date, startTime, endTime, id);
+      await this.validateAvailability(
+        targetServiceId,
+        staffId,
+        date,
+        startTime,
+        endTime,
+        appointment.clientId,
+        id,
+      );
     }
 
-    await this.appointmentRepository.update(id, updateAppointmentDto);
-    return this.findOne(id);
+    const normalizedOriginalStart = this.normalizeTime(originalStartTime);
+    const normalizedTargetStart = this.normalizeTime(targetStartTime);
+    const originalDateValue = this.toDateOnly(originalDate).getTime();
+    const targetDateValue = this.toDateOnly(targetDate).getTime();
+    const slotChanged =
+      originalServiceId !== targetServiceId ||
+      normalizedOriginalStart !== normalizedTargetStart ||
+      originalDateValue !== targetDateValue;
+
+    let newSlotReserved = false;
+    if (slotChanged) {
+      await this.reserveSlotForAppointment(
+        targetServiceId,
+        targetDate,
+        normalizedTargetStart,
+        appointment.clientId,
+      );
+      newSlotReserved = true;
+    }
+
+    try {
+      await this.appointmentRepository.update(id, updateAppointmentDto);
+      if (slotChanged) {
+        await this.releaseSlotForAppointment(
+          originalServiceId,
+          originalDate,
+          normalizedOriginalStart,
+          appointment.clientId,
+        );
+      }
+      return this.findOne(id);
+    } catch (error) {
+      if (newSlotReserved) {
+        await this.releaseSlotForAppointment(
+          targetServiceId,
+          targetDate,
+          normalizedTargetStart,
+          appointment.clientId,
+        );
+      }
+      throw error;
+    }
   }
 
-  async cancel(id: string, reason: string, userId?: string): Promise<Appointment> {
+  async cancel(id: string, reason: string): Promise<Appointment> {
     const appointment = await this.findOne(id);
 
     if (appointment.status === AppointmentStatus.CANCELADA) {
-      throw new BadRequestException('La cita ya está cancelada');
+      throw new BadRequestException('La cita ya esta cancelada');
     }
 
     if (appointment.status === AppointmentStatus.COMPLETADA) {
@@ -134,12 +230,21 @@ export class AppointmentService {
       cancellationReason: reason,
     });
 
+    await this.releaseSlotForAppointment(
+      appointment.serviceId,
+      appointment.date,
+      appointment.startTime,
+      appointment.clientId,
+    );
+
     return this.findOne(id);
   }
 
-  async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
-    const appointment = await this.findOne(id);
-
+  async updateStatus(
+    id: string,
+    status: AppointmentStatus,
+  ): Promise<Appointment> {
+    await this.findOne(id);
     await this.appointmentRepository.update(id, { status });
     return this.findOne(id);
   }
@@ -147,9 +252,14 @@ export class AppointmentService {
   async remove(id: string): Promise<void> {
     const appointment = await this.findOne(id);
     await this.appointmentRepository.remove(appointment);
+    await this.releaseSlotForAppointment(
+      appointment.serviceId,
+      appointment.date,
+      appointment.startTime,
+      appointment.clientId,
+    );
   }
 
-  // Métodos auxiliares
   private calculateEndTime(startTime: string, durationMinutes: number): string {
     const [hours, minutes] = startTime.split(':').map(Number);
     const totalMinutes = hours * 60 + minutes + durationMinutes;
@@ -159,56 +269,58 @@ export class AppointmentService {
   }
 
   private async validateAvailability(
+    serviceId: string,
     staffId: string,
     date: Date,
     startTime: string,
     endTime: string,
+    clientId: string,
     excludeAppointmentId?: string,
   ): Promise<void> {
-    // 1. Validar que la fecha no sea en el pasado
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const appointmentDate = new Date(date);
     appointmentDate.setHours(0, 0, 0, 0);
 
     if (appointmentDate < today) {
-      throw new BadRequestException('No se pueden agendar citas en fechas pasadas');
+      throw new BadRequestException(
+        'No se pueden agendar citas en fechas pasadas',
+      );
     }
 
-    // 2. Obtener disponibilidad del staff
-    const availability = await this.scheduleService.getStaffAvailability(staffId, date);
+    const normalizedStart = this.normalizeTime(startTime);
+    const normalizedEnd = this.normalizeTime(endTime);
+    const dateOnly = this.toDateOnly(date);
 
-    // Verificar que el staff trabaje ese día
-    if (availability.schedules.length === 0) {
-      throw new BadRequestException('El personal no trabaja en esta fecha');
+    const slot = await this.serviceSlotRepository.findOne({
+      where: {
+        serviceId,
+        date: dateOnly,
+        startTime: normalizedStart,
+      },
+    });
+
+    if (!slot) {
+      throw new BadRequestException(
+        'No existe un slot configurado para este horario',
+      );
     }
 
-    // Verificar que la hora esté dentro del horario laboral
-    const isWithinSchedule = availability.schedules.some(
-      (schedule) => startTime >= schedule.startTime && endTime <= schedule.endTime,
-    );
+    const slotBelongsToClient = slot.clientId === clientId;
+    const slotUsable =
+      slot.status === ServiceSlotStatus.AVAILABLE ||
+      (slot.status === ServiceSlotStatus.RESERVED && slotBelongsToClient);
 
-    if (!isWithinSchedule) {
-      throw new BadRequestException('La hora seleccionada está fuera del horario laboral');
+    if (!slotUsable) {
+      throw new BadRequestException('El horario no esta disponible');
     }
 
-    // 3. Verificar bloqueos
-    const hasBlock = availability.blocks.some(
-      (block) =>
-        (startTime >= block.startTime && startTime < block.endTime) ||
-        (endTime > block.startTime && endTime <= block.endTime) ||
-        (startTime <= block.startTime && endTime >= block.endTime),
-    );
-
-    if (hasBlock) {
-      throw new BadRequestException('El horario está bloqueado');
-    }
-
-    // 4. Verificar conflictos con otras citas
-    const whereConditions: any = {
+    const whereConditions: Record<string, unknown> = {
       staffId,
-      date,
-      status: Not(In([AppointmentStatus.CANCELADA, AppointmentStatus.NO_ASISTIO])),
+      date: dateOnly,
+      status: Not(
+        In([AppointmentStatus.CANCELADA, AppointmentStatus.NO_ASISTIO]),
+      ),
     };
 
     if (excludeAppointmentId) {
@@ -219,29 +331,109 @@ export class AppointmentService {
       where: whereConditions,
     });
 
-    const hasConflict = existingAppointments.some(
-      (apt) =>
-        (startTime >= apt.startTime && startTime < apt.endTime) ||
-        (endTime > apt.startTime && endTime <= apt.endTime) ||
-        (startTime <= apt.startTime && endTime >= apt.endTime),
-    );
+    const hasConflict = existingAppointments.some((apt) => {
+      const aptStart = this.normalizeTime(apt.startTime);
+      const aptEnd = this.normalizeTime(apt.endTime);
+      return (
+        (normalizedStart >= aptStart && normalizedStart < aptEnd) ||
+        (normalizedEnd > aptStart && normalizedEnd <= aptEnd) ||
+        (normalizedStart <= aptStart && normalizedEnd >= aptEnd)
+      );
+    });
 
     if (hasConflict) {
       throw new BadRequestException('Ya existe una cita en este horario');
     }
   }
 
-  // Estadísticas
+  private toDateOnly(input: Date | string): Date {
+    const date = input instanceof Date ? new Date(input) : new Date(input);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  private normalizeTime(time: string): string {
+    if (!time) {
+      return time;
+    }
+    return time.length === 5 ? `${time}:00` : time;
+  }
+
+  private async reserveSlotForAppointment(
+    serviceId: string,
+    date: Date | string,
+    startTime: string,
+    clientId: string,
+  ): Promise<void> {
+    const normalizedStartTime = this.normalizeTime(startTime);
+    const slot = await this.serviceSlotRepository.findOne({
+      where: {
+        serviceId,
+        date: this.toDateOnly(date),
+        startTime: normalizedStartTime,
+        status: ServiceSlotStatus.AVAILABLE,
+      },
+    });
+
+    if (!slot) {
+      throw new BadRequestException(
+        'No existe un slot disponible para este horario',
+      );
+    }
+
+    slot.status = ServiceSlotStatus.RESERVED;
+    slot.clientId = clientId;
+    await this.serviceSlotRepository.save(slot);
+  }
+
+  private async releaseSlotForAppointment(
+    serviceId: string,
+    date: Date | string,
+    startTime: string,
+    clientId: string,
+  ): Promise<void> {
+    const normalizedStartTime = this.normalizeTime(startTime);
+    const slot = await this.serviceSlotRepository.findOne({
+      where: {
+        serviceId,
+        date: this.toDateOnly(date),
+        startTime: normalizedStartTime,
+      },
+    });
+
+    if (!slot) {
+      return;
+    }
+
+    if (slot.clientId !== clientId) {
+      return;
+    }
+
+    slot.status = ServiceSlotStatus.AVAILABLE;
+    slot.clientId = null;
+    await this.serviceSlotRepository.save(slot);
+  }
+
   async getStatistics(startDate: Date, endDate: Date) {
     const appointments = await this.findByDateRange(startDate, endDate);
 
     return {
       total: appointments.length,
-      pendientes: appointments.filter((a) => a.status === AppointmentStatus.PENDIENTE).length,
-      confirmadas: appointments.filter((a) => a.status === AppointmentStatus.CONFIRMADA).length,
-      completadas: appointments.filter((a) => a.status === AppointmentStatus.COMPLETADA).length,
-      canceladas: appointments.filter((a) => a.status === AppointmentStatus.CANCELADA).length,
-      noAsistio: appointments.filter((a) => a.status === AppointmentStatus.NO_ASISTIO).length,
+      pendientes: appointments.filter(
+        (a) => a.status === AppointmentStatus.PENDIENTE,
+      ).length,
+      confirmadas: appointments.filter(
+        (a) => a.status === AppointmentStatus.CONFIRMADA,
+      ).length,
+      completadas: appointments.filter(
+        (a) => a.status === AppointmentStatus.COMPLETADA,
+      ).length,
+      canceladas: appointments.filter(
+        (a) => a.status === AppointmentStatus.CANCELADA,
+      ).length,
+      noAsistio: appointments.filter(
+        (a) => a.status === AppointmentStatus.NO_ASISTIO,
+      ).length,
     };
   }
 }

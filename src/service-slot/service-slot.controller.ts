@@ -48,18 +48,23 @@ export class ServiceSlotController {
   @Get('mine')
   @Roles(UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Listar mis slots como prestador' })
-  @ApiQuery({ name: 'date', required: false, description: 'Filtrar por fecha (YYYY-MM-DD)' })
-  findMySlots(
-    @CurrentUser() currentUser: any,
-    @Query('date') date?: string,
-  ) {
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    description: 'Filtrar por fecha (YYYY-MM-DD)',
+  })
+  findMySlots(@CurrentUser() currentUser: any, @Query('date') date?: string) {
     return this.serviceSlotService.findByProvider(currentUser.id, date);
   }
 
   @Get('provider/:providerId')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Listar slots de un prestador (Solo Admin)' })
-  @ApiQuery({ name: 'date', required: false, description: 'Filtrar por fecha (YYYY-MM-DD)' })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    description: 'Filtrar por fecha (YYYY-MM-DD)',
+  })
   findByProvider(
     @Param('providerId') providerId: string,
     @Query('date') date?: string,

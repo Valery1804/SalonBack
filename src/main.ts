@@ -20,7 +20,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Salon Backend API')
-    .setDescription('API completa para el sistema de salon con autenticacion JWT')
+    .setDescription(
+      'API completa para el sistema de salon con autenticacion JWT',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -43,7 +45,9 @@ async function bootstrap() {
   });
 
   const docsPath = join(process.cwd(), 'swagger-spec.json');
-  writeFileSync(docsPath, JSON.stringify(document, null, 2), { encoding: 'utf8' });
+  writeFileSync(docsPath, JSON.stringify(document, null, 2), {
+    encoding: 'utf8',
+  });
   console.log(`Swagger JSON generado en: ${docsPath}`);
 
   const port = process.env.PORT ?? 3000;

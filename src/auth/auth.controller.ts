@@ -1,10 +1,9 @@
-import {
+﻿import {
   Controller,
   Post,
   Body,
   Get,
   Query,
-  UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -32,14 +31,14 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiOperation({ summary: 'Iniciar sesiÃ³n' })
   @ApiResponse({
     status: 200,
-    description: 'Inicio de sesión exitoso',
+    description: 'Inicio de sesiÃ³n exitoso',
     type: AuthResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
-  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+  @ApiResponse({ status: 401, description: 'Credenciales invÃ¡lidas' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invÃ¡lidos' })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
@@ -53,8 +52,8 @@ export class AuthController {
     description: 'Usuario registrado exitosamente',
     type: AuthResponseDto,
   })
-  @ApiResponse({ status: 409, description: 'El email ya está registrado' })
-  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+  @ApiResponse({ status: 409, description: 'El email ya estÃ¡ registrado' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invÃ¡lidos' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
   }
@@ -62,44 +61,52 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
+  @ApiOperation({ summary: 'Solicitar recuperaciÃ³n de contraseÃ±a' })
   @ApiResponse({
     status: 200,
-    description: 'Solicitud de recuperación enviada exitosamente',
+    description: 'Solicitud de recuperaciÃ³n enviada exitosamente',
     schema: {
       type: 'object',
       properties: {
         message: {
           type: 'string',
-          example: 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.',
+          example:
+            'Si el email existe en nuestro sistema, recibirÃ¡s un enlace para restablecer tu contraseÃ±a.',
         },
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+  @ApiResponse({ status: 400, description: 'Datos de entrada invÃ¡lidos' })
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Restablecer contraseña con token' })
+  @ApiOperation({ summary: 'Restablecer contraseÃ±a con token' })
   @ApiResponse({
     status: 200,
-    description: 'Contraseña restablecida exitosamente',
+    description: 'ContraseÃ±a restablecida exitosamente',
     schema: {
       type: 'object',
       properties: {
         message: {
           type: 'string',
-          example: 'Contraseña restablecida exitosamente',
+          example: 'ContraseÃ±a restablecida exitosamente',
         },
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Token inválido o contraseñas no coinciden' })
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+  @ApiResponse({
+    status: 400,
+    description: 'Token invÃ¡lido o contraseÃ±as no coinciden',
+  })
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
@@ -108,7 +115,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Verificar email con token' })
   @ApiQuery({
     name: 'token',
-    description: 'Token de verificación de email',
+    description: 'Token de verificaciÃ³n de email',
     example: 'abc123def456',
   })
   @ApiResponse({
@@ -124,24 +131,26 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Token de verificación inválido' })
-  async verifyEmail(@Query('token') token: string): Promise<{ message: string }> {
+  @ApiResponse({ status: 400, description: 'Token de verificaciÃ³n invÃ¡lido' })
+  async verifyEmail(
+    @Query('token') token: string,
+  ): Promise<{ message: string }> {
     return this.authService.verifyEmail(token);
   }
 
   @Public()
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reenviar email de verificación' })
+  @ApiOperation({ summary: 'Reenviar email de verificaciÃ³n' })
   @ApiResponse({
     status: 200,
-    description: 'Email de verificación enviado',
+    description: 'Email de verificaciÃ³n enviado',
     schema: {
       type: 'object',
       properties: {
         message: {
           type: 'string',
-          example: 'Email de verificación enviado',
+          example: 'Email de verificaciÃ³n enviado',
         },
       },
     },

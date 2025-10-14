@@ -1,4 +1,13 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, Matches, IsEnum, ValidateIf } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsOptional,
+  Matches,
+  IsEnum,
+  ValidateIf,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { ProviderType } from '../../common/enums/provider-type.enum';
@@ -21,7 +30,8 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'La contraseña es requerida' })
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message: 'La contraseña debe contener al menos una letra minúscula, una mayúscula, un número y un carácter especial',
+    message:
+      'La contraseña debe contener al menos una letra minúscula, una mayúscula, un número y un carácter especial',
   })
   password: string;
 

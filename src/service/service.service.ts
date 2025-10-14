@@ -23,9 +23,14 @@ export class ServiceService {
     private readonly serviceRepository: Repository<Service>,
   ) {}
 
-  async create(createServiceDto: CreateServiceDto, provider: CurrentUserLike): Promise<Service> {
+  async create(
+    createServiceDto: CreateServiceDto,
+    provider: CurrentUserLike,
+  ): Promise<Service> {
     if (provider.role !== UserRole.PRESTADOR_SERVICIO) {
-      throw new ForbiddenException('Solo los prestadores de servicio pueden registrar servicios');
+      throw new ForbiddenException(
+        'Solo los prestadores de servicio pueden registrar servicios',
+      );
     }
 
     const existingService = await this.serviceRepository.findOne({
@@ -107,7 +112,9 @@ export class ServiceService {
       currentUser.role !== UserRole.ADMIN &&
       service.providerId !== currentUser.id
     ) {
-      throw new ForbiddenException('No tienes permiso para modificar este servicio');
+      throw new ForbiddenException(
+        'No tienes permiso para modificar este servicio',
+      );
     }
 
     return service;

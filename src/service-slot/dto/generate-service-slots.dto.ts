@@ -1,12 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID, Matches, IsInt, Min } from 'class-validator';
+﻿import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsUUID,
+  Matches,
+  IsInt,
+  Min,
+} from 'class-validator';
 
 export class GenerateServiceSlotsDto {
   @ApiProperty({
     description: 'ID del prestador que ofrece el servicio',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsUUID('4', { message: 'El ID del prestador debe ser un UUID válido' })
+  @IsUUID('4', { message: 'El ID del prestador debe ser un UUID vÃ¡lido' })
   @IsNotEmpty({ message: 'El ID del prestador es requerido' })
   providerId: string;
 
@@ -14,15 +22,15 @@ export class GenerateServiceSlotsDto {
     description: 'ID del servicio a ofertar',
     example: '223e4567-e89b-12d3-a456-426614174999',
   })
-  @IsUUID('4', { message: 'El ID del servicio debe ser un UUID válido' })
+  @IsUUID('4', { message: 'El ID del servicio debe ser un UUID vÃ¡lido' })
   @IsNotEmpty({ message: 'El ID del servicio es requerido' })
   serviceId: string;
 
   @ApiProperty({
-    description: 'Fecha para la que se generarán los bloques',
+    description: 'Fecha para la que se generarÃ¡n los bloques',
     example: '2025-10-13',
   })
-  @IsDateString({}, { message: 'La fecha debe tener un formato ISO válido' })
+  @IsDateString({}, { message: 'La fecha debe tener un formato ISO vÃ¡lido' })
   date: string;
 
   @ApiProperty({
@@ -44,12 +52,13 @@ export class GenerateServiceSlotsDto {
   endTime: string;
 
   @ApiProperty({
-    description: 'Duración personalizada de cada slot en minutos (opcional, se usa la duración del servicio por defecto)',
+    description:
+      'DuraciÃ³n personalizada de cada slot en minutos (opcional, se usa la duraciÃ³n del servicio por defecto)',
     example: 15,
     required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'La duración debe ser un número entero' })
-  @Min(5, { message: 'La duración mínima es de 5 minutos' })
+  @IsInt({ message: 'La duraciÃ³n debe ser un nÃºmero entero' })
+  @Min(5, { message: 'La duraciÃ³n mÃ­nima es de 5 minutos' })
   durationMinutes?: number;
 }

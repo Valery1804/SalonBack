@@ -1,5 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+﻿import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
@@ -19,7 +36,10 @@ export class AppointmentController {
   @Post()
   @ApiOperation({ summary: 'Crear una nueva cita' })
   @ApiResponse({ status: 201, description: 'Cita creada exitosamente' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos o horario no disponible' })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos invÃ¡lidos o horario no disponible',
+  })
   create(@Body() createAppointmentDto: CreateAppointmentDto, @Request() req) {
     return this.appointmentService.create(createAppointmentDto, req.user.sub);
   }
@@ -27,7 +47,10 @@ export class AppointmentController {
   @Get()
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener todas las citas (Solo personal y admin)' })
-  @ApiResponse({ status: 200, description: 'Lista de citas obtenida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de citas obtenida exitosamente',
+  })
   findAll() {
     return this.appointmentService.findAll();
   }
@@ -42,7 +65,10 @@ export class AppointmentController {
   @Get('by-client/:clientId')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtener citas de un cliente (Solo Admin)' })
-  @ApiResponse({ status: 200, description: 'Citas del cliente obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Citas del cliente obtenidas exitosamente',
+  })
   findByClient(@Param('clientId') clientId: string) {
     return this.appointmentService.findByClient(clientId);
   }
@@ -50,7 +76,10 @@ export class AppointmentController {
   @Get('by-staff/:staffId')
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({ summary: 'Obtener citas de un miembro del personal' })
-  @ApiResponse({ status: 200, description: 'Citas del staff obtenidas exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Citas del staff obtenidas exitosamente',
+  })
   findByStaff(@Param('staffId') staffId: string) {
     return this.appointmentService.findByStaff(staffId);
   }
@@ -61,17 +90,26 @@ export class AppointmentController {
   @ApiQuery({ name: 'startDate', type: Date, description: 'Fecha de inicio' })
   @ApiQuery({ name: 'endDate', type: Date, description: 'Fecha de fin' })
   @ApiResponse({ status: 200, description: 'Citas obtenidas exitosamente' })
-  findByDateRange(@Query('startDate') startDate: Date, @Query('endDate') endDate: Date) {
+  findByDateRange(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+  ) {
     return this.appointmentService.findByDateRange(startDate, endDate);
   }
 
   @Get('statistics')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Obtener estadísticas de citas (Solo Admin)' })
+  @ApiOperation({ summary: 'Obtener estadÃ­sticas de citas (Solo Admin)' })
   @ApiQuery({ name: 'startDate', type: Date, description: 'Fecha de inicio' })
   @ApiQuery({ name: 'endDate', type: Date, description: 'Fecha de fin' })
-  @ApiResponse({ status: 200, description: 'Estadísticas obtenidas exitosamente' })
-  getStatistics(@Query('startDate') startDate: Date, @Query('endDate') endDate: Date) {
+  @ApiResponse({
+    status: 200,
+    description: 'EstadÃ­sticas obtenidas exitosamente',
+  })
+  getStatistics(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+  ) {
     return this.appointmentService.getStatistics(startDate, endDate);
   }
 
@@ -87,23 +125,31 @@ export class AppointmentController {
   @ApiOperation({ summary: 'Actualizar una cita' })
   @ApiResponse({ status: 200, description: 'Cita actualizada exitosamente' })
   @ApiResponse({ status: 404, description: 'Cita no encontrada' })
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto, @Request() req) {
-    return this.appointmentService.update(id, updateAppointmentDto, req.user.sub);
+  update(
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentDto,
+  ) {
+    return this.appointmentService.update(id, updateAppointmentDto);
   }
 
   @Post(':id/cancel')
   @ApiOperation({ summary: 'Cancelar una cita' })
   @ApiResponse({ status: 200, description: 'Cita cancelada exitosamente' })
   @ApiResponse({ status: 400, description: 'No se puede cancelar la cita' })
-  cancel(@Param('id') id: string, @Body() cancelDto: CancelAppointmentDto, @Request() req) {
-    return this.appointmentService.cancel(id, cancelDto.reason, req.user.sub);
+  cancel(@Param('id') id: string, @Body() cancelDto: CancelAppointmentDto) {
+    return this.appointmentService.cancel(id, cancelDto.reason);
   }
 
   @Patch(':id/status')
   @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
-  @ApiOperation({ summary: 'Actualizar estado de una cita (Solo personal y admin)' })
+  @ApiOperation({
+    summary: 'Actualizar estado de una cita (Solo personal y admin)',
+  })
   @ApiResponse({ status: 200, description: 'Estado actualizado exitosamente' })
-  updateStatus(@Param('id') id: string, @Body() updateStatusDto: UpdateStatusDto) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ) {
     return this.appointmentService.updateStatus(id, updateStatusDto.status);
   }
 

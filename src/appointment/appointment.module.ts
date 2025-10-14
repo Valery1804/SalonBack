@@ -5,10 +5,11 @@ import { AppointmentController } from './appointment.controller';
 import { Appointment } from './entities/appointment.entity';
 import { ServiceModule } from '../service/service.module';
 import { ScheduleModule } from '../schedule/schedule.module';
+import { ServiceSlot } from '../service-slot/entities/service-slot.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Appointment]),
+    TypeOrmModule.forFeature([Appointment, ServiceSlot]),
     ServiceModule,
     ScheduleModule,
   ],

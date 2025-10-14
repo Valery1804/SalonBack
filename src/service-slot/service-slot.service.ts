@@ -43,14 +43,18 @@ export class ServiceSlotService {
     }
 
     if (provider.role !== UserRole.PRESTADOR_SERVICIO) {
-      throw new BadRequestException('El usuario seleccionado no es un prestador de servicio');
+      throw new BadRequestException(
+        'El usuario seleccionado no es un prestador de servicio',
+      );
     }
 
     if (
       currentUser.role === UserRole.PRESTADOR_SERVICIO &&
       provider.id !== currentUser.id
     ) {
-      throw new ForbiddenException('No puedes generar slots para otro prestador');
+      throw new ForbiddenException(
+        'No puedes generar slots para otro prestador',
+      );
     }
 
     const service = await this.serviceRepository.findOne({
@@ -76,11 +80,15 @@ export class ServiceSlotService {
     const endMinutes = this.parseTimeToMinutes(generateDto.endTime);
 
     if (startMinutes >= endMinutes) {
-      throw new BadRequestException('La hora de inicio debe ser menor a la hora de fin');
+      throw new BadRequestException(
+        'La hora de inicio debe ser menor a la hora de fin',
+      );
     }
 
     if (slotDuration > endMinutes - startMinutes) {
-      throw new BadRequestException('La duración del slot excede el rango de tiempo proporcionado');
+      throw new BadRequestException(
+        'La duración del slot excede el rango de tiempo proporcionado',
+      );
     }
 
     const existingSlots = await this.serviceSlotRepository
@@ -136,7 +144,10 @@ export class ServiceSlotService {
     return this.serviceSlotRepository.save(newSlots);
   }
 
-  async findByProvider(providerId: string, date?: string): Promise<ServiceSlot[]> {
+  async findByProvider(
+    providerId: string,
+    date?: string,
+  ): Promise<ServiceSlot[]> {
     await this.ensureProviderExists(providerId);
 
     const query = this.serviceSlotRepository
@@ -155,8 +166,13 @@ export class ServiceSlotService {
     return query.getMany();
   }
 
-  async findAvailableByService(serviceId: string, date?: string): Promise<ServiceSlot[]> {
-    const service = await this.serviceRepository.findOne({ where: { id: serviceId } });
+  async findAvailableByService(
+    serviceId: string,
+    date?: string,
+  ): Promise<ServiceSlot[]> {
+    const service = await this.serviceRepository.findOne({
+      where: { id: serviceId },
+    });
     if (!service) {
       throw new NotFoundException('Servicio no encontrado');
     }
@@ -181,7 +197,9 @@ export class ServiceSlotService {
     updateDto: UpdateServiceSlotStatusDto,
     currentUser: AuthenticatedUser,
   ): Promise<ServiceSlot> {
-    const slot = await this.serviceSlotRepository.findOne({ where: { id: slotId } });
+    const slot = await this.serviceSlotRepository.findOne({
+      where: { id: slotId },
+    });
 
     if (!slot) {
       throw new NotFoundException('Slot no encontrado');
@@ -191,19 +209,25 @@ export class ServiceSlotService {
       currentUser.role === UserRole.PRESTADOR_SERVICIO &&
       slot.service?.providerId !== currentUser.id
     ) {
-      throw new ForbiddenException('No puedes modificar slots de otro prestador');
+      throw new ForbiddenException(
+        'No puedes modificar slots de otro prestador',
+      );
     }
 
     if (
       updateDto.status === ServiceSlotStatus.RESERVED &&
       slot.status !== ServiceSlotStatus.AVAILABLE
     ) {
-      throw new BadRequestException('Solo se pueden reservar slots disponibles');
+      throw new BadRequestException(
+        'Solo se pueden reservar slots disponibles',
+      );
     }
 
     if (updateDto.status === ServiceSlotStatus.RESERVED) {
       if (!updateDto.clientId) {
-        throw new BadRequestException('Debe indicar el cliente que reserva el slot');
+        throw new BadRequestException(
+          'Debe indicar el cliente que reserva el slot',
+        );
       }
 
       const client = await this.userRepository.findOne({
@@ -228,7 +252,10 @@ export class ServiceSlotService {
       slot.clientId = null;
     }
 
-    if (updateDto.status === ServiceSlotStatus.COMPLETED && updateDto.clientId) {
+    if (
+      updateDto.status === ServiceSlotStatus.COMPLETED &&
+      updateDto.clientId
+    ) {
       slot.clientId = updateDto.clientId;
     }
 
@@ -239,13 +266,17 @@ export class ServiceSlotService {
   }
 
   private async ensureProviderExists(providerId: string): Promise<void> {
-    const provider = await this.userRepository.findOne({ where: { id: providerId } });
+    const provider = await this.userRepository.findOne({
+      where: { id: providerId },
+    });
     if (!provider) {
       throw new NotFoundException('Prestador no encontrado');
     }
 
     if (provider.role !== UserRole.PRESTADOR_SERVICIO) {
-      throw new BadRequestException('El usuario indicado no es un prestador de servicio');
+      throw new BadRequestException(
+        'El usuario indicado no es un prestador de servicio',
+      );
     }
   }
 
