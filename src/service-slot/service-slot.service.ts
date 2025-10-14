@@ -46,10 +46,6 @@ export class ServiceSlotService {
       throw new BadRequestException('El usuario seleccionado no es un prestador de servicio');
     }
 
-    if (!provider.providerType) {
-      throw new BadRequestException('El prestador no tiene un tipo configurado');
-    }
-
     if (
       currentUser.role === UserRole.PRESTADOR_SERVICIO &&
       provider.id !== currentUser.id
@@ -63,6 +59,10 @@ export class ServiceSlotService {
 
     if (!service) {
       throw new NotFoundException('Servicio no encontrado');
+    }
+
+    if (service.providerId !== provider.id) {
+      throw new ForbiddenException('El servicio no pertenece a este prestador');
     }
 
     const slotDuration = generateDto.durationMinutes ?? service.durationMinutes;
@@ -83,13 +83,13 @@ export class ServiceSlotService {
       throw new BadRequestException('La duración del slot excede el rango de tiempo proporcionado');
     }
 
-    const existingSlots = await this.serviceSlotRepository.find({
-      where: {
-        providerId: provider.id,
-        date,
-      },
-      order: { startTime: 'ASC' },
-    });
+    const existingSlots = await this.serviceSlotRepository
+      .createQueryBuilder('slot')
+      .innerJoin('slot.service', 'service')
+      .where('service.providerId = :providerId', { providerId: provider.id })
+      .andWhere('slot.date = :date', { date })
+      .orderBy('slot.startTime', 'ASC')
+      .getMany();
 
     const newSlots: ServiceSlot[] = [];
 
@@ -117,9 +117,7 @@ export class ServiceSlotService {
       }
 
       const slot = this.serviceSlotRepository.create({
-        providerId: provider.id,
         serviceId: service.id,
-        providerType: provider.providerType,
         date,
         startTime,
         endTime,
@@ -141,15 +139,20 @@ export class ServiceSlotService {
   async findByProvider(providerId: string, date?: string): Promise<ServiceSlot[]> {
     await this.ensureProviderExists(providerId);
 
-    const where: Record<string, unknown> = { providerId };
+    const query = this.serviceSlotRepository
+      .createQueryBuilder('slot')
+      .innerJoinAndSelect('slot.service', 'service')
+      .leftJoinAndSelect('slot.client', 'client')
+      .where('service.providerId = :providerId', { providerId })
+      .orderBy('slot.date', 'ASC')
+      .addOrderBy('slot.startTime', 'ASC');
+
     if (date) {
-      where.date = this.parseDate(date);
+      const parsedDate = this.parseDate(date);
+      query.andWhere('slot.date = :date', { date: parsedDate });
     }
 
-    return this.serviceSlotRepository.find({
-      where,
-      order: { date: 'ASC', startTime: 'ASC' },
-    });
+    return query.getMany();
   }
 
   async findAvailableByService(serviceId: string, date?: string): Promise<ServiceSlot[]> {
@@ -186,7 +189,7 @@ export class ServiceSlotService {
 
     if (
       currentUser.role === UserRole.PRESTADOR_SERVICIO &&
-      slot.providerId !== currentUser.id
+      slot.service?.providerId !== currentUser.id
     ) {
       throw new ForbiddenException('No puedes modificar slots de otro prestador');
     }
@@ -243,10 +246,6 @@ export class ServiceSlotService {
 
     if (provider.role !== UserRole.PRESTADOR_SERVICIO) {
       throw new BadRequestException('El usuario indicado no es un prestador de servicio');
-    }
-
-    if (!provider.providerType) {
-      throw new BadRequestException('El prestador no tiene un tipo configurado');
     }
   }
 

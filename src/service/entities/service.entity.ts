@@ -4,14 +4,19 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Unique,
 } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('services')
+@Unique(['providerId', 'name'])
 export class Service {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @Column('text')
@@ -25,6 +30,13 @@ export class Service {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column('uuid', { nullable: true })
+  providerId: string | null;
+
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'providerId' })
+  provider: User;
 
   @CreateDateColumn()
   createdAt: Date;

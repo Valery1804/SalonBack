@@ -670,7 +670,7 @@
             "JWT-auth": []
           }
         ],
-        "summary": "Actualizar un servicio (Solo Prestador de Servicio)",
+        "summary": "Actualizar un servicio",
         "tags": [
           "Servicios"
         ]
@@ -700,7 +700,7 @@
             "JWT-auth": []
           }
         ],
-        "summary": "Eliminar un servicio (Solo Prestador de Servicio)",
+        "summary": "Eliminar un servicio",
         "tags": [
           "Servicios"
         ]

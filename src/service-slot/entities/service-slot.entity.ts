@@ -8,30 +8,15 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
 import { Service } from '../../service/entities/service.entity';
+import { User } from '../../user/entities/user.entity';
 import { ServiceSlotStatus } from '../../common/enums/service-slot-status.enum';
-import { ProviderType } from '../../common/enums/provider-type.enum';
 
 @Entity('service_slots')
-@Index(['providerId', 'date'])
 @Index(['serviceId', 'date'])
 export class ServiceSlot {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column('uuid')
-  providerId: string;
-
-  @ManyToOne(() => User, { eager: true })
-  @JoinColumn({ name: 'providerId' })
-  provider: User;
-
-  @Column({
-    type: 'enum',
-    enum: ProviderType,
-  })
-  providerType: ProviderType;
 
   @Column('uuid')
   serviceId: string;
