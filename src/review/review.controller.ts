@@ -35,7 +35,7 @@ export class ReviewController {
   @ApiOperation({ summary: 'Crear una nueva reseña' })
   @ApiResponse({ status: 201, description: 'Reseña creada exitosamente' })
   create(@Body() createReviewDto: CreateReviewDto, @Request() req) {
-    const userId = req?.user?.sub;
+    const userId = req?.user?.id ?? req?.user?.sub;
 
     if (!userId) {
       throw new UnauthorizedException('Debes iniciar sesion para dejar una resena');
