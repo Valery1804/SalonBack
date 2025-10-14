@@ -31,7 +31,7 @@
         },
         "responses": {
           "200": {
-            "description": "Inicio de sesión exitoso",
+            "description": "Inicio de sesiÃ³n exitoso",
             "content": {
               "application/json": {
                 "schema": {
@@ -41,13 +41,13 @@
             }
           },
           "400": {
-            "description": "Datos de entrada inválidos"
+            "description": "Datos de entrada invÃ¡lidos"
           },
           "401": {
-            "description": "Credenciales inválidas"
+            "description": "Credenciales invÃ¡lidas"
           }
         },
-        "summary": "Iniciar sesión",
+        "summary": "Iniciar sesiÃ³n",
         "tags": [
           "authentication"
         ]
@@ -79,10 +79,10 @@
             }
           },
           "400": {
-            "description": "Datos de entrada inválidos"
+            "description": "Datos de entrada invÃ¡lidos"
           },
           "409": {
-            "description": "El email ya está registrado"
+            "description": "El email ya estÃ¡ registrado"
           }
         },
         "summary": "Registrar nuevo usuario",
@@ -107,7 +107,7 @@
         },
         "responses": {
           "200": {
-            "description": "Solicitud de recuperación enviada exitosamente",
+            "description": "Solicitud de recuperaciÃ³n enviada exitosamente",
             "content": {
               "application/json": {
                 "schema": {
@@ -115,7 +115,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña."
+                      "example": "Si el email existe en nuestro sistema, recibirÃ¡s un enlace para restablecer tu contraseÃ±a."
                     }
                   }
                 }
@@ -123,10 +123,10 @@
             }
           },
           "400": {
-            "description": "Datos de entrada inválidos"
+            "description": "Datos de entrada invÃ¡lidos"
           }
         },
-        "summary": "Solicitar recuperación de contraseña",
+        "summary": "Solicitar recuperaciÃ³n de contraseÃ±a",
         "tags": [
           "authentication"
         ]
@@ -148,7 +148,7 @@
         },
         "responses": {
           "200": {
-            "description": "Contraseña restablecida exitosamente",
+            "description": "ContraseÃ±a restablecida exitosamente",
             "content": {
               "application/json": {
                 "schema": {
@@ -156,7 +156,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Contraseña restablecida exitosamente"
+                      "example": "ContraseÃ±a restablecida exitosamente"
                     }
                   }
                 }
@@ -164,10 +164,10 @@
             }
           },
           "400": {
-            "description": "Token inválido o contraseñas no coinciden"
+            "description": "Token invÃ¡lido o contraseÃ±as no coinciden"
           }
         },
-        "summary": "Restablecer contraseña con token",
+        "summary": "Restablecer contraseÃ±a con token",
         "tags": [
           "authentication"
         ]
@@ -181,7 +181,7 @@
             "name": "token",
             "required": true,
             "in": "query",
-            "description": "Token de verificación de email",
+            "description": "Token de verificaciÃ³n de email",
             "schema": {
               "example": "abc123def456",
               "type": "string"
@@ -206,7 +206,7 @@
             }
           },
           "400": {
-            "description": "Token de verificación inválido"
+            "description": "Token de verificaciÃ³n invÃ¡lido"
           }
         },
         "summary": "Verificar email con token",
@@ -221,7 +221,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Email de verificación enviado",
+            "description": "Email de verificaciÃ³n enviado",
             "content": {
               "application/json": {
                 "schema": {
@@ -229,7 +229,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Email de verificación enviado"
+                      "example": "Email de verificaciÃ³n enviado"
                     }
                   }
                 }
@@ -243,7 +243,7 @@
             "description": "Usuario no encontrado"
           }
         },
-        "summary": "Reenviar email de verificación",
+        "summary": "Reenviar email de verificaciÃ³n",
         "tags": [
           "authentication"
         ]
@@ -1083,7 +1083,7 @@
             "description": "Cita creada exitosamente"
           },
           "400": {
-            "description": "Datos inválidos o horario no disponible"
+            "description": "Datos invÃ¡lidos o horario no disponible"
           }
         },
         "security": [
@@ -1261,7 +1261,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Estadísticas obtenidas exitosamente"
+            "description": "EstadÃ­sticas obtenidas exitosamente"
           }
         },
         "security": [
@@ -1269,7 +1269,7 @@
             "JWT-auth": []
           }
         ],
-        "summary": "Obtener estadísticas de citas (Solo Admin)",
+        "summary": "Obtener estadÃ­sticas de citas (Solo Admin)",
         "tags": [
           "Citas"
         ]
@@ -2651,7 +2651,7 @@
           },
           "date": {
             "type": "string",
-            "description": "Fecha para la que se generarán los bloques",
+            "description": "Fecha para la que se generarÃ¡n los bloques",
             "example": "2025-10-13"
           },
           "startTime": {
@@ -2666,7 +2666,7 @@
           },
           "durationMinutes": {
             "type": "number",
-            "description": "Duración personalizada de cada slot en minutos (opcional, se usa la duración del servicio por defecto)",
+            "description": "DuraciÃ³n personalizada de cada slot en minutos (opcional, se usa la duraciÃ³n del servicio por defecto)",
             "example": 15
           }
         },

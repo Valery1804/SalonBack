@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -34,7 +35,13 @@ export class ReviewController {
   @ApiOperation({ summary: 'Crear una nueva reseña' })
   @ApiResponse({ status: 201, description: 'Reseña creada exitosamente' })
   create(@Body() createReviewDto: CreateReviewDto, @Request() req) {
-    return this.reviewService.create(createReviewDto, req.user.sub);
+    const userId = req?.user?.sub;
+
+    if (!userId) {
+      throw new UnauthorizedException('Debes iniciar sesion para dejar una resena');
+    }
+
+    return this.reviewService.create(createReviewDto, userId);
   }
 
   @Get()
