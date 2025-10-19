@@ -38,7 +38,9 @@ export class ReviewController {
     const userId = req?.user?.id ?? req?.user?.sub;
 
     if (!userId) {
-      throw new UnauthorizedException('Debes iniciar sesion para dejar una resena');
+      throw new UnauthorizedException(
+        'Debes iniciar sesion para dejar una resena',
+      );
     }
 
     return this.reviewService.create(createReviewDto, userId);

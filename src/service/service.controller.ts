@@ -36,7 +36,7 @@ export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   @Post()
-  @Roles(UserRole.PRESTADOR_SERVICIO)
+  @Roles(UserRole.ADMIN, UserRole.PRESTADOR_SERVICIO)
   @ApiOperation({
     summary: 'Crear un nuevo servicio (Solo Prestador de Servicio)',
   })

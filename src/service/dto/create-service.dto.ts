@@ -5,6 +5,7 @@ import {
   Min,
   IsOptional,
   IsBoolean,
+  IsUUID,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -52,4 +53,13 @@ export class CreateServiceDto {
   @IsOptional()
   @IsBoolean({ message: 'El estado debe ser un booleano' })
   isActive?: boolean;
+
+  @ApiProperty({
+    description: 'ID del prestador asignado (solo administradores)',
+    example: 'uuid-del-prestador',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID(undefined, { message: 'El identificador del prestador no es válido' })
+  providerId?: string;
 }

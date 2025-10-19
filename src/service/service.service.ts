@@ -27,14 +27,21 @@ export class ServiceService {
     createServiceDto: CreateServiceDto,
     provider: CurrentUserLike,
   ): Promise<Service> {
-    if (provider.role !== UserRole.PRESTADOR_SERVICIO) {
+    const { providerId: providerIdFromDto, ...rest } = createServiceDto;
+    let ownerId: string | null = null;
+
+    if (provider.role === UserRole.PRESTADOR_SERVICIO) {
+      ownerId = provider.id;
+    } else if (provider.role === UserRole.ADMIN) {
+      ownerId = providerIdFromDto ?? null;
+    } else {
       throw new ForbiddenException(
-        'Solo los prestadores de servicio pueden registrar servicios',
+        'No tienes permisos para registrar servicios',
       );
     }
 
     const existingService = await this.serviceRepository.findOne({
-      where: { name: createServiceDto.name, providerId: provider.id },
+      where: { name: rest.name, providerId: ownerId },
     });
 
     if (existingService) {
@@ -42,10 +49,11 @@ export class ServiceService {
     }
 
     const service = this.serviceRepository.create({
-      ...createServiceDto,
-      providerId: provider.id,
+      ...rest,
+      providerId: ownerId,
     });
-    return this.serviceRepository.save(service);
+    const created = await this.serviceRepository.save(service);
+    return this.findOne(created.id);
   }
 
   async findAll(): Promise<Service[]> {
@@ -79,12 +87,16 @@ export class ServiceService {
     currentUser: CurrentUserLike,
   ): Promise<Service> {
     const service = await this.ensureServiceAccess(id, currentUser);
+    const targetProviderId =
+      updateServiceDto.providerId !== undefined
+        ? updateServiceDto.providerId
+        : service.providerId;
 
     if (updateServiceDto.name && updateServiceDto.name !== service.name) {
       const existingService = await this.serviceRepository.findOne({
         where: {
           name: updateServiceDto.name,
-          providerId: service.providerId,
+          providerId: targetProviderId,
         },
       });
 

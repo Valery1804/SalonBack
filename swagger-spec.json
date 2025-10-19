@@ -2305,6 +2305,11 @@
             "description": "Estado activo del servicio",
             "example": true,
             "default": true
+          },
+          "providerId": {
+            "type": "string",
+            "description": "ID del prestador asignado (solo administradores)",
+            "example": "uuid-del-prestador"
           }
         },
         "required": [
@@ -2342,6 +2347,11 @@
             "description": "Estado activo del servicio",
             "example": true,
             "default": true
+          },
+          "providerId": {
+            "type": "string",
+            "description": "ID del prestador asignado (solo administradores)",
+            "example": "uuid-del-prestador"
           }
         }
       },
