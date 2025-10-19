@@ -1,0 +1,2713 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesiÃ³n exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos de entrada invÃ¡lidos"
+          },
+          "401": {
+            "description": "Credenciales invÃ¡lidas"
+          }
+        },
+        "summary": "Iniciar sesiÃ³n",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos de entrada invÃ¡lidos"
+          },
+          "409": {
+            "description": "El email ya estÃ¡ registrado"
+          }
+        },
+        "summary": "Registrar nuevo usuario",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Solicitud de recuperaciÃ³n enviada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Si el email existe en nuestro sistema, recibirÃ¡s un enlace para restablecer tu contraseÃ±a."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos de entrada invÃ¡lidos"
+          }
+        },
+        "summary": "Solicitar recuperaciÃ³n de contraseÃ±a",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ContraseÃ±a restablecida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "ContraseÃ±a restablecida exitosamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token invÃ¡lido o contraseÃ±as no coinciden"
+          }
+        },
+        "summary": "Restablecer contraseÃ±a con token",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/verify-email": {
+      "get": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Token de verificaciÃ³n de email",
+            "schema": {
+              "example": "abc123def456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verificado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email verificado exitosamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token de verificaciÃ³n invÃ¡lido"
+          }
+        },
+        "summary": "Verificar email con token",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "operationId": "AuthController_resendVerificationEmail",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Email de verificaciÃ³n enviado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email de verificaciÃ³n enviado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email ya verificado"
+          },
+          "404": {
+            "description": "Usuario no encontrado"
+          }
+        },
+        "summary": "Reenviar email de verificaciÃ³n",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Perfil del usuario obtenido exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener perfil del usuario autenticado",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos de entrada inválidos"
+          },
+          "409": {
+            "description": "El email ya está registrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un nuevo usuario",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener todos los usuarios",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del usuario",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario encontrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener un usuario por ID",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del usuario",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado"
+          },
+          "409": {
+            "description": "El email ya está registrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar un usuario",
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del usuario",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Usuario eliminado exitosamente"
+          },
+          "404": {
+            "description": "Usuario no encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar un usuario",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/profile/me": {
+      "get": {
+        "operationId": "UserController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Perfil del usuario obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener perfil del usuario autenticado",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar perfil del usuario autenticado",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/services": {
+      "post": {
+        "operationId": "ServiceController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Servicio creado exitosamente"
+          },
+          "409": {
+            "description": "Ya existe un servicio con ese nombre"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crear un nuevo servicio (Solo Prestador de Servicio)",
+        "tags": [
+          "Servicios"
+        ]
+      },
+      "get": {
+        "operationId": "ServiceController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de servicios obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener todos los servicios",
+        "tags": [
+          "Servicios"
+        ]
+      }
+    },
+    "/services/active": {
+      "get": {
+        "operationId": "ServiceController_findActive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de servicios activos obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener servicios activos",
+        "tags": [
+          "Servicios"
+        ]
+      }
+    },
+    "/services/{id}": {
+      "get": {
+        "operationId": "ServiceController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servicio obtenido exitosamente"
+          },
+          "404": {
+            "description": "Servicio no encontrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener un servicio por ID",
+        "tags": [
+          "Servicios"
+        ]
+      },
+      "patch": {
+        "operationId": "ServiceController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateServiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Servicio actualizado exitosamente"
+          },
+          "404": {
+            "description": "Servicio no encontrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar un servicio",
+        "tags": [
+          "Servicios"
+        ]
+      },
+      "delete": {
+        "operationId": "ServiceController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servicio eliminado exitosamente"
+          },
+          "404": {
+            "description": "Servicio no encontrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Eliminar un servicio",
+        "tags": [
+          "Servicios"
+        ]
+      }
+    },
+    "/schedules": {
+      "post": {
+        "operationId": "ScheduleController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Horario creado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crear horario de trabajo (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      },
+      "get": {
+        "operationId": "ScheduleController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de horarios obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener todos los horarios",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/staff/{staffId}": {
+      "get": {
+        "operationId": "ScheduleController_findByStaffId",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Horarios del staff obtenidos exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener horarios de un miembro del personal",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/{id}": {
+      "get": {
+        "operationId": "ScheduleController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Horario obtenido exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener un horario por ID (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      },
+      "patch": {
+        "operationId": "ScheduleController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Horario actualizado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar horario (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      },
+      "delete": {
+        "operationId": "ScheduleController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Horario eliminado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Eliminar horario (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/blocks": {
+      "post": {
+        "operationId": "ScheduleController_createBlock",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduleBlockDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bloqueo creado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crear bloqueo de horario (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/blocks/all": {
+      "get": {
+        "operationId": "ScheduleController_findAllBlocks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de bloqueos obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener todos los bloqueos (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/blocks/date-range": {
+      "get": {
+        "operationId": "ScheduleController_findBlocksByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de inicio",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de fin",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bloqueos obtenidos exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener bloqueos por rango de fechas",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/blocks/staff/{staffId}": {
+      "get": {
+        "operationId": "ScheduleController_findBlocksByStaffId",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bloqueos del staff obtenidos exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener bloqueos de un miembro del personal",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/blocks/{id}": {
+      "delete": {
+        "operationId": "ScheduleController_removeBlock",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bloqueo eliminado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Eliminar bloqueo (Solo Admin)",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/schedules/availability/{staffId}": {
+      "get": {
+        "operationId": "ScheduleController_getStaffAvailability",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "description": "Fecha a consultar",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disponibilidad obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener disponibilidad de un staff en una fecha",
+        "tags": [
+          "Horarios"
+        ]
+      }
+    },
+    "/appointments": {
+      "post": {
+        "operationId": "AppointmentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppointmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cita creada exitosamente"
+          },
+          "400": {
+            "description": "Datos invÃ¡lidos o horario no disponible"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crear una nueva cita",
+        "tags": [
+          "Citas"
+        ]
+      },
+      "get": {
+        "operationId": "AppointmentController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de citas obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener todas las citas (Solo personal y admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/my-appointments": {
+      "get": {
+        "operationId": "AppointmentController_findMyAppointments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Mis citas obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener mis citas (cliente)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/by-client/{clientId}": {
+      "get": {
+        "operationId": "AppointmentController_findByClient",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Citas del cliente obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener citas de un cliente (Solo Admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/by-staff/{staffId}": {
+      "get": {
+        "operationId": "AppointmentController_findByStaff",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Citas del staff obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener citas de un miembro del personal",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/by-date-range": {
+      "get": {
+        "operationId": "AppointmentController_findByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de inicio",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de fin",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Citas obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener citas por rango de fechas (Solo Admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/statistics": {
+      "get": {
+        "operationId": "AppointmentController_getStatistics",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de inicio",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Fecha de fin",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EstadÃ­sticas obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener estadÃ­sticas de citas (Solo Admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/{id}": {
+      "get": {
+        "operationId": "AppointmentController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cita obtenida exitosamente"
+          },
+          "404": {
+            "description": "Cita no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener una cita por ID",
+        "tags": [
+          "Citas"
+        ]
+      },
+      "patch": {
+        "operationId": "AppointmentController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppointmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cita actualizada exitosamente"
+          },
+          "404": {
+            "description": "Cita no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar una cita",
+        "tags": [
+          "Citas"
+        ]
+      },
+      "delete": {
+        "operationId": "AppointmentController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cita eliminada exitosamente"
+          },
+          "404": {
+            "description": "Cita no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Eliminar una cita (Solo Admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/{id}/cancel": {
+      "post": {
+        "operationId": "AppointmentController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelAppointmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cita cancelada exitosamente"
+          },
+          "400": {
+            "description": "No se puede cancelar la cita"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Cancelar una cita",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/appointments/{id}/status": {
+      "patch": {
+        "operationId": "AppointmentController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estado actualizado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar estado de una cita (Solo personal y admin)",
+        "tags": [
+          "Citas"
+        ]
+      }
+    },
+    "/reviews": {
+      "post": {
+        "operationId": "ReviewController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reseña creada exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crear una nueva reseña",
+        "tags": [
+          "Reseñas"
+        ]
+      },
+      "get": {
+        "operationId": "ReviewController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de reseñas obtenida exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener todas las reseñas",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/reviews/by-service/{serviceId}": {
+      "get": {
+        "operationId": "ReviewController_findByService",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseñas del servicio obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener reseñas de un servicio",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/reviews/by-client/{clientId}": {
+      "get": {
+        "operationId": "ReviewController_findByClient",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseñas del cliente obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener reseñas de un cliente (Solo Admin)",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/reviews/my-reviews": {
+      "get": {
+        "operationId": "ReviewController_findMyReviews",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Mis reseñas obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener mis reseñas",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/reviews/service-stats/{serviceId}": {
+      "get": {
+        "operationId": "ReviewController_getServiceStats",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estadísticas obtenidas exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener estadísticas de reseñas de un servicio",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "operationId": "ReviewController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña obtenida exitosamente"
+          },
+          "404": {
+            "description": "Reseña no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener una reseña por ID",
+        "tags": [
+          "Reseñas"
+        ]
+      },
+      "patch": {
+        "operationId": "ReviewController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reseña actualizada exitosamente"
+          },
+          "404": {
+            "description": "Reseña no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar una reseña",
+        "tags": [
+          "Reseñas"
+        ]
+      },
+      "delete": {
+        "operationId": "ReviewController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña eliminada exitosamente"
+          },
+          "404": {
+            "description": "Reseña no encontrada"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Eliminar una reseña (Solo Admin)",
+        "tags": [
+          "Reseñas"
+        ]
+      }
+    },
+    "/service-slots/generate": {
+      "post": {
+        "operationId": "ServiceSlotController_generateSlots",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateServiceSlotsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Slots generados exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Generar slots de servicio para un prestador",
+        "tags": [
+          "Service Slots"
+        ]
+      }
+    },
+    "/service-slots/mine": {
+      "get": {
+        "operationId": "ServiceSlotController_findMySlots",
+        "parameters": [
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por fecha (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Listar mis slots como prestador",
+        "tags": [
+          "Service Slots"
+        ]
+      }
+    },
+    "/service-slots/provider/{providerId}": {
+      "get": {
+        "operationId": "ServiceSlotController_findByProvider",
+        "parameters": [
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por fecha (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Listar slots de un prestador (Solo Admin)",
+        "tags": [
+          "Service Slots"
+        ]
+      }
+    },
+    "/service-slots/available": {
+      "get": {
+        "operationId": "ServiceSlotController_findAvailable",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "required": true,
+            "in": "query",
+            "description": "ID del servicio",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Fecha (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtener slots disponibles por servicio",
+        "tags": [
+          "Service Slots"
+        ]
+      }
+    },
+    "/service-slots/{slotId}/status": {
+      "patch": {
+        "operationId": "ServiceSlotController_updateStatus",
+        "parameters": [
+          {
+            "name": "slotId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateServiceSlotStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Slot actualizado exitosamente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Actualizar el estado de un slot",
+        "tags": [
+          "Service Slots"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Salon Backend API",
+    "description": "API completa para el sistema de salon con autenticacion JWT",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "usuario@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "MiPassword123!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único del usuario",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "usuario@ejemplo.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombre del usuario",
+            "example": "Juan"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellido del usuario",
+            "example": "Pérez"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Nombre completo del usuario",
+            "example": "Juan Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono del usuario",
+            "example": "+1234567890",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del usuario",
+            "example": true
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Estado de verificación del email",
+            "example": false
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del usuario en el sistema",
+            "enum": [
+              "admin",
+              "cliente",
+              "prestador_servicio"
+            ],
+            "example": "cliente"
+          },
+          "providerType": {
+            "type": "string",
+            "description": "Tipo de prestador",
+            "enum": [
+              "barbero",
+              "estilista",
+              "manicurista",
+              "maquilladora"
+            ],
+            "example": "barbero",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de creación del usuario",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de última actualización del usuario",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "fullName",
+          "phone",
+          "isActive",
+          "emailVerified",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Token de acceso JWT",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Tipo de token",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Tiempo de expiración del token en segundos",
+            "example": 3600
+          },
+          "user": {
+            "description": "Información del usuario autenticado",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresIn",
+          "user"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "usuario@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "MiPassword123!",
+            "minLength": 8
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombre del usuario",
+            "example": "Juan"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellido del usuario",
+            "example": "Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono del usuario",
+            "example": "+1234567890"
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del usuario en el sistema",
+            "enum": [
+              "admin",
+              "cliente",
+              "prestador_servicio"
+            ],
+            "example": "cliente",
+            "default": "cliente"
+          },
+          "providerType": {
+            "type": "string",
+            "description": "Tipo de prestador (obligatorio para rol prestador_servicio)",
+            "enum": [
+              "barbero",
+              "estilista",
+              "manicurista",
+              "maquilladora"
+            ],
+            "example": "barbero"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirmación de la contraseña",
+            "example": "MiPassword123!"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "firstName",
+          "lastName",
+          "confirmPassword"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email del usuario para recuperar contraseña",
+            "example": "usuario@ejemplo.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token de recuperación de contraseña",
+            "example": "abc123def456"
+          },
+          "password": {
+            "type": "string",
+            "description": "Nueva contraseña",
+            "example": "MiNuevaPassword123!"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirmación de nueva contraseña",
+            "example": "MiNuevaPassword123!"
+          }
+        },
+        "required": [
+          "token",
+          "password",
+          "confirmPassword"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "usuario@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "MiPassword123!",
+            "minLength": 8
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombre del usuario",
+            "example": "Juan"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellido del usuario",
+            "example": "Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono del usuario",
+            "example": "+1234567890"
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del usuario en el sistema",
+            "enum": [
+              "admin",
+              "cliente",
+              "prestador_servicio"
+            ],
+            "example": "cliente",
+            "default": "cliente"
+          },
+          "providerType": {
+            "type": "string",
+            "description": "Tipo de prestador (obligatorio para rol prestador_servicio)",
+            "enum": [
+              "barbero",
+              "estilista",
+              "manicurista",
+              "maquilladora"
+            ],
+            "example": "barbero"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "usuario@ejemplo.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombre del usuario",
+            "example": "Juan"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellido del usuario",
+            "example": "Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono del usuario",
+            "example": "+1234567890"
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del usuario en el sistema",
+            "enum": [
+              "admin",
+              "cliente",
+              "prestador_servicio"
+            ],
+            "example": "cliente",
+            "default": "cliente"
+          },
+          "providerType": {
+            "type": "string",
+            "description": "Tipo de prestador (obligatorio para rol prestador_servicio)",
+            "enum": [
+              "barbero",
+              "estilista",
+              "manicurista",
+              "maquilladora"
+            ],
+            "example": "barbero"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del usuario",
+            "example": true
+          },
+          "emailVerificationToken": {
+            "type": "string",
+            "description": "Token de verificación de email",
+            "example": "abc123def456"
+          }
+        }
+      },
+      "CreateServiceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del servicio",
+            "example": "Corte de cabello"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del servicio",
+            "example": "Corte de cabello profesional con lavado incluido"
+          },
+          "price": {
+            "type": "number",
+            "description": "Precio del servicio",
+            "example": 25
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Duración del servicio en minutos",
+            "example": 45
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del servicio",
+            "example": true,
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "price",
+          "durationMinutes"
+        ]
+      },
+      "UpdateServiceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del servicio",
+            "example": "Corte de cabello"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del servicio",
+            "example": "Corte de cabello profesional con lavado incluido"
+          },
+          "price": {
+            "type": "number",
+            "description": "Precio del servicio",
+            "example": 25
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Duración del servicio en minutos",
+            "example": 45
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del servicio",
+            "example": true,
+            "default": true
+          }
+        }
+      },
+      "CreateScheduleDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "description": "ID del miembro del personal",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "description": "Día de la semana",
+            "enum": [
+              "lunes",
+              "martes",
+              "miercoles",
+              "jueves",
+              "viernes",
+              "sabado",
+              "domingo"
+            ],
+            "example": "lunes"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio (formato HH:mm)",
+            "example": "09:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin (formato HH:mm)",
+            "example": "18:00"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del horario",
+            "example": true,
+            "default": true
+          }
+        },
+        "required": [
+          "staffId",
+          "dayOfWeek",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "UpdateScheduleDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "description": "ID del miembro del personal",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "description": "Día de la semana",
+            "enum": [
+              "lunes",
+              "martes",
+              "miercoles",
+              "jueves",
+              "viernes",
+              "sabado",
+              "domingo"
+            ],
+            "example": "lunes"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio (formato HH:mm)",
+            "example": "09:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin (formato HH:mm)",
+            "example": "18:00"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del horario",
+            "example": true,
+            "default": true
+          }
+        }
+      },
+      "CreateScheduleBlockDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "description": "ID del miembro del personal (opcional, si es null se bloquea para todos)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha del bloqueo",
+            "example": "2024-12-25"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio del bloqueo (formato HH:mm)",
+            "example": "09:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin del bloqueo (formato HH:mm)",
+            "example": "18:00"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Razón del bloqueo",
+            "example": "Día festivo"
+          }
+        },
+        "required": [
+          "date",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "CreateAppointmentDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "ID del cliente (se obtiene automáticamente del usuario logueado)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID del miembro del personal",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "ID del servicio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de la cita",
+            "example": "2024-12-25"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio de la cita (formato HH:mm)",
+            "example": "10:00"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notas adicionales para la cita",
+            "example": "Cliente prefiere corte moderno"
+          }
+        },
+        "required": [
+          "staffId",
+          "serviceId",
+          "date",
+          "startTime"
+        ]
+      },
+      "UpdateAppointmentDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "ID del cliente (se obtiene automáticamente del usuario logueado)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID del miembro del personal",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "ID del servicio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de la cita",
+            "example": "2024-12-25"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio de la cita (formato HH:mm)",
+            "example": "10:00"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notas adicionales para la cita",
+            "example": "Cliente prefiere corte moderno"
+          }
+        }
+      },
+      "CancelAppointmentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Razón de la cancelación",
+            "example": "Surgió un imprevisto"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "UpdateStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Nuevo estado de la cita",
+            "enum": [
+              "pendiente",
+              "confirmada",
+              "completada",
+              "cancelada",
+              "no_asistio"
+            ],
+            "example": "confirmada"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "ID del servicio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "appointmentId": {
+            "type": "string",
+            "description": "ID de la cita (opcional)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Calificación (1-5)",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comentario de la reseña",
+            "example": "Excelente servicio, muy profesional"
+          }
+        },
+        "required": [
+          "serviceId",
+          "rating"
+        ]
+      },
+      "UpdateReviewDto": {
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "ID del servicio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "appointmentId": {
+            "type": "string",
+            "description": "ID de la cita (opcional)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Calificación (1-5)",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comentario de la reseña",
+            "example": "Excelente servicio, muy profesional"
+          }
+        }
+      },
+      "GenerateServiceSlotsDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "ID del prestador que ofrece el servicio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "ID del servicio a ofertar",
+            "example": "223e4567-e89b-12d3-a456-426614174999"
+          },
+          "date": {
+            "type": "string",
+            "description": "Fecha para la que se generarÃ¡n los bloques",
+            "example": "2025-10-13"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio (HH:mm)",
+            "example": "12:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin (HH:mm)",
+            "example": "18:00"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "DuraciÃ³n personalizada de cada slot en minutos (opcional, se usa la duraciÃ³n del servicio por defecto)",
+            "example": 15
+          }
+        },
+        "required": [
+          "providerId",
+          "serviceId",
+          "date",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "UpdateServiceSlotStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Nuevo estado del slot",
+            "enum": [
+              "available",
+              "reserved",
+              "blocked",
+              "completed",
+              "cancelled"
+            ],
+            "example": "reserved"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "ID del cliente que reserva o libera el slot (opcional según el estado)",
+            "example": "323e4567-e89b-12d3-a456-426614174abc"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Nota o motivo asociado al cambio de estado",
+            "example": "Reservado manualmente por el administrador"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      }
+    }
+  }
+}
