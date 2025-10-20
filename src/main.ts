@@ -19,13 +19,7 @@ async function bootstrap() {
     }),
   );
 
-  // Configuración mejorada de CORS
-  app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
-    credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('Salon Backend API')
