@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { ServiceResponseDto } from './dto/service-response.dto';
 import { Service } from './entities/service.entity';
 import { UserRole } from '../common/enums/user-role.enum';
 
@@ -26,7 +27,7 @@ export class ServiceService {
   async create(
     createServiceDto: CreateServiceDto,
     provider: CurrentUserLike,
-  ): Promise<Service> {
+  ): Promise<ServiceResponseDto> {
     const { providerId: providerIdFromDto, ...rest } = createServiceDto;
     let ownerId: string | null = null;
 
@@ -56,20 +57,27 @@ export class ServiceService {
     return this.findOne(created.id);
   }
 
-  async findAll(): Promise<Service[]> {
-    return this.serviceRepository.find({
+  async findAll(): Promise<ServiceResponseDto[]> {
+    const services = await this.serviceRepository.find({
       order: { name: 'ASC' },
     });
+    return services.map((service) => new ServiceResponseDto(service));
   }
 
-  async findActive(): Promise<Service[]> {
-    return this.serviceRepository.find({
+  async findActive(): Promise<ServiceResponseDto[]> {
+    const services = await this.serviceRepository.find({
       where: { isActive: true },
       order: { name: 'ASC' },
     });
+    return services.map((service) => new ServiceResponseDto(service));
   }
 
-  async findOne(id: string): Promise<Service> {
+  async findOne(id: string): Promise<ServiceResponseDto> {
+    const service = await this.findServiceEntity(id);
+    return new ServiceResponseDto(service);
+  }
+
+  private async findServiceEntity(id: string): Promise<Service> {
     const service = await this.serviceRepository.findOne({
       where: { id },
     });
@@ -85,7 +93,7 @@ export class ServiceService {
     id: string,
     updateServiceDto: UpdateServiceDto,
     currentUser: CurrentUserLike,
-  ): Promise<Service> {
+  ): Promise<ServiceResponseDto> {
     const service = await this.ensureServiceAccess(id, currentUser);
     const targetProviderId =
       updateServiceDto.providerId !== undefined
@@ -118,7 +126,7 @@ export class ServiceService {
     id: string,
     currentUser: CurrentUserLike,
   ): Promise<Service> {
-    const service = await this.findOne(id);
+    const service = await this.findServiceEntity(id);
 
     if (
       currentUser.role !== UserRole.ADMIN &&

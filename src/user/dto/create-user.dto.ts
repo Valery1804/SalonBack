@@ -29,7 +29,7 @@ export class CreateUserDto {
   @IsString({ message: 'La contraseña debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La contraseña es requerida' })
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, {
     message:
       'La contraseña debe contener al menos una letra minúscula, una mayúscula, un número y un carácter especial',
   })
@@ -84,4 +84,13 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'El tipo de prestador es requerido' })
   @IsEnum(ProviderType, { message: 'El tipo de prestador no es válido' })
   providerType?: ProviderType;
+
+  @ApiProperty({
+    description: 'Imagen de perfil en formato base64',
+    example: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'La imagen de perfil debe ser una cadena de texto' })
+  profileImage?: string;
 }

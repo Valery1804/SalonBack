@@ -47,6 +47,9 @@ export class User {
   })
   providerType: ProviderType | null;
 
+  @Column({ type: 'text', nullable: true })
+  profileImage: string | null;
+
   @Column({ default: true })
   isActive: boolean;
 

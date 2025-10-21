@@ -62,7 +62,12 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: CreateUserDto): Promise<AuthResponseDto> {
+  async register(registerDto: any): Promise<AuthResponseDto> {
+    // Validar que las contraseñas coincidan
+    if (registerDto.confirmPassword && registerDto.password !== registerDto.confirmPassword) {
+      throw new BadRequestException('Las contraseñas no coinciden');
+    }
+
     if (
       registerDto.role === UserRole.PRESTADOR_SERVICIO &&
       !registerDto.providerType

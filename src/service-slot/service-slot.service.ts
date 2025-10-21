@@ -295,7 +295,8 @@ export class ServiceSlotService {
       throw new BadRequestException('La fecha proporcionada no es válida');
     }
 
-    return new Date(Date.UTC(year, month - 1, day));
+    // No usar UTC - crear fecha local para evitar desfase de timezone
+    return new Date(year, month - 1, day);
   }
 
   private parseTimeToMinutes(time: string): number {

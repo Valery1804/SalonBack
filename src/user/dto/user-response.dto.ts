@@ -70,6 +70,14 @@ export class UserResponseDto {
   providerType?: ProviderType | null;
 
   @ApiProperty({
+    description: 'Imagen de perfil en formato base64',
+    example: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...',
+    nullable: true,
+    required: false,
+  })
+  profileImage?: string | null;
+
+  @ApiProperty({
     description: 'Fecha de creación del usuario',
     example: '2024-01-01T00:00:00.000Z',
   })
@@ -92,6 +100,7 @@ export class UserResponseDto {
     this.emailVerified = user.emailVerified;
     this.role = user.role;
     this.providerType = user.providerType ?? null;
+    this.profileImage = user.profileImage ?? null;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }
