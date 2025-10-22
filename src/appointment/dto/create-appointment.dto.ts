@@ -44,7 +44,7 @@ export class CreateAppointmentDto {
     { message: 'La fecha debe tener un formato válido (YYYY-MM-DD)' },
   )
   @IsNotEmpty({ message: 'La fecha es requerida' })
-  date: Date;
+  date: string;
 
   @ApiProperty({
     description: 'Hora de inicio de la cita (formato HH:mm)',

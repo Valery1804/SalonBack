@@ -271,7 +271,7 @@ export class AppointmentService {
   private async validateAvailability(
     serviceId: string,
     staffId: string,
-    date: Date,
+    date: Date | string,
     startTime: string,
     endTime: string,
     clientId: string,
